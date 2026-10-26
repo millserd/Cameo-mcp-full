@@ -1,0 +1,68 @@
+plugins {
+    id 'java'
+}
+
+allprojects {
+    group = 'com.cameomcp'
+    version = '3.1.0'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+}
+
+def cameoHome = findProperty('cameoHome') ?: System.getenv('CAMEO_HOME') ?: 'D:/DevTools/CatiaMagic'
+
+tasks.register('dist', Zip) {
+    dependsOn ':plugin:jar', ':stdio:jar'
+    archiveFileName = "cameo-mcp-${version}.zip"
+    destinationDirectory = file("${buildDir}/dist")
+    from(project(':plugin').file('plugin.xml')) { into 'com.cameomcp.plugin' }
+    from(project(':plugin').tasks.named('jar')) { into 'com.cameomcp.plugin' }
+    from(project(':stdio').tasks.named('jar')) { into 'com.cameomcp.plugin' }
+    from('README.md') { into 'com.cameomcp.plugin' }
+    from('AGENTS.md') { into 'com.cameomcp.plugin' }
+    from('skills') { into 'com.cameomcp.plugin/skills' }
+    from('schemas') { into 'com.cameomcp.plugin/schemas' }
+}
+
+tasks.register('deploy', Copy) {
+    dependsOn ':plugin:jar', ':stdio:jar'
+    from(project(':plugin').file('plugin.xml'))
+    from(project(':plugin').tasks.named('jar'))
+    from(project(':stdio').tasks.named('jar'))
+    from('README.md')
+    from('AGENTS.md')
+    from('skills') { into 'skills' }
+    from('schemas') { into 'schemas' }
+    into "${cameoHome}/plugins/com.cameomcp.plugin"
+}
+
+
+tasks.register('rdzip', Zip) {
+    description = 'Packages a Cameo Resource/Plugin Manager installable archive (.rdzip / .zip) containing plugin JARs, descriptor, and AI SKILL.md'
+    dependsOn ':plugin:jar', ':stdio:jar'
+    archiveFileName = "cameo-mcp-${version}.rdzip"
+    destinationDirectory = file("${buildDir}/dist")
+
+    from(project(':plugin').file('resourcemanager-descriptor.xml')) {
+        into 'data/resourcemanager'
+        rename { 'MDR_Plugin_CameoMcp_3001_descriptor.xml' }
+    }
+    from(project(':plugin').file('plugin.xml')) { into 'plugins/com.cameomcp.plugin' }
+    from(project(':plugin').tasks.named('jar')) { into 'plugins/com.cameomcp.plugin' }
+    from(project(':stdio').tasks.named('jar'))  { into 'plugins/com.cameomcp.plugin' }
+    from('README.md')                           { into 'plugins/com.cameomcp.plugin' }
+    from('AGENTS.md')                           { into 'plugins/com.cameomcp.plugin' }
+    from('skills')                              { into 'plugins/com.cameomcp.plugin/skills' }
+    from('schemas')                             { into 'plugins/com.cameomcp.plugin/schemas' }
+}
