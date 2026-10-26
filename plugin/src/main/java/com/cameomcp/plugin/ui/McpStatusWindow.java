@@ -50,16 +50,27 @@ public class McpStatusWindow extends JDialog {
     }
 
     public static void showWindow(CameoMcpPlugin plugin) {
+        CameoLog.info("Opening MCP Server Status window...");
         SwingUtilities.invokeLater(() -> {
-            Frame mainFrame = Application.getInstance().getMainFrame();
-            if (activeWindow == null || !activeWindow.isDisplayable()) {
-                activeWindow = new McpStatusWindow(mainFrame, plugin);
-                activeWindow.pack();
-                activeWindow.setLocationRelativeTo(mainFrame);
+            try {
+                Frame mainFrame = Application.getInstance().getMainFrame();
+                if (activeWindow == null || !activeWindow.isDisplayable()) {
+                    activeWindow = new McpStatusWindow(mainFrame, plugin);
+                    activeWindow.pack();
+                    activeWindow.setLocationRelativeTo(mainFrame);
+                }
+                activeWindow.refreshState();
+                activeWindow.setVisible(true);
+                activeWindow.toFront();
+                CameoLog.info("MCP Server Status window shown at " + activeWindow.getBounds());
+            } catch (Throwable t) {
+                // Exceptions inside invokeLater are otherwise swallowed silently by Cameo's EDT
+                CameoLog.error("Failed to open MCP Server Status window", t);
+                JTextArea trace = new JTextArea(CameoLog.getLastErrorTrace(), 20, 90);
+                trace.setEditable(false);
+                JOptionPane.showMessageDialog(null, new JScrollPane(trace),
+                        "Cameo MCP — Status window failed to open", JOptionPane.ERROR_MESSAGE);
             }
-            activeWindow.refreshState();
-            activeWindow.setVisible(true);
-            activeWindow.toFront();
         });
     }
 
@@ -159,6 +170,17 @@ public class McpStatusWindow extends JDialog {
     }
 
     public void refreshState() {
+        try {
+            doRefreshState();
+        } catch (Throwable t) {
+            CameoLog.error("Status window refresh failed", t);
+            if (refreshTimer != null) refreshTimer.stop(); // don't repeat the same failure every 1.5s
+            statusLabel.setText("REFRESH ERROR — " + t);
+            statusLabel.setForeground(new Color(180, 20, 20));
+        }
+    }
+
+    private void doRefreshState() {
         McpRuntime rt = plugin.getRuntime();
         Settings s = plugin.getSettings();
         if (rt != null && rt.isRunning()) {
@@ -185,8 +207,7 @@ public class McpStatusWindow extends JDialog {
 
         StringBuilder sb = new StringBuilder();
         for (String line : CameoLog.getRecentLogs()) {
-            sb.append(line).append('
-');
+            sb.append(line).append('\n');
         }
         logArea.setText(sb.toString());
     }

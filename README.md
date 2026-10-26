@@ -8,7 +8,7 @@ This unified edition aligns the architecture, package structure (`com.cameomcp.*
 
 | Feature / Surface | [`ajhcs/cameo-mcp-bridge`](https://github.com/ajhcs/cameo-mcp-bridge) | [`millserd/Cameo-mcp`](https://github.com/millserd/Cameo-mcp) | Unified `cameo-mcp` (v3.1.0) |
 | :--- | :--- | :--- | :--- |
-| **Plugin ID & Main Class** | `com.claude.cameo.bridge` / `CameoMCPBridgePlugin` | `com.cameomcp.plugin` / `com.cameomcp.plugin.CameoMcpPlugin` | **`com.cameomcp.plugin` / `com.cameomcp.plugin.CameoMcpPlugin`** (100% aligned with `millserd/Cameo-mcp`) |
+| **Plugin ID & Main Class** | separate bridge plugin ID / `CameoMCPBridgePlugin` | `com.cameomcp.plugin` / `com.cameomcp.plugin.CameoMcpPlugin` | **`com.cameomcp.plugin` / `com.cameomcp.plugin.CameoMcpPlugin`** (100% aligned with `millserd/Cameo-mcp`) |
 | **Runtime Stack** | Python `.venv` MCP server + Java HTTP plugin | 100% Java (`core/`, `plugin/`, `stdio/`) | **100% Java (`core/`, `plugin/`, `stdio/`)** — zero Python, zero external dependencies |
 | **Cameo Main Menu & UI** | None (headless HTTP socket) | Top-level **`MCP`** menu (`McpMenuConfigurator`) + **`McpStatusWindow`** + `ClientConfigs` + `ConnectionTest` | **Top-level `MCP` menu + `McpStatusWindow`** with port/token config, live request log, one-click self-test, session reset, and clipboard config copy |
 | **Cameo Log Integration** | None | `CameoLog.java` publishing `[Cameo MCP]` to Notification window (`GUILog`) and `md.log` | **`CameoLog.java` (`[Cameo MCP]`)** publishing to `Application.getInstance().getGUILog()`, `md.log`, and the in-app status window |
@@ -65,8 +65,10 @@ cameo-mcp/
 ### 1. Build & Deploy to Cameo 2024x or 2026x
 
 ```bash
-# Build distribution zip (build/dist/cameo-mcp-3.1.0.zip)
-./gradlew dist -PcameoHome="/path/to/Cameo"
+# Build both archives (build.ps1 / build.sh run: rdzip dist)
+#   build/dist/cameo-mcp-3.1.0.zip         -> Cameo: Help > Resource/Plugin Manager > Import
+#   build/dist/cameo-mcp-3.1.0-manual.zip  -> extract into <CAMEO_HOME>/plugins/ (no Resource Manager)
+./gradlew rdzip dist -PcameoHome="/path/to/Cameo"
 
 # Or deploy directly into <CAMEO_HOME>/plugins/com.cameomcp.plugin/
 ./gradlew deploy -PcameoHome="/path/to/Cameo"

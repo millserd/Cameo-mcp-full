@@ -20,7 +20,20 @@
     <installation>
         <file from="data/resourcemanager/MDR_Plugin_CameoMcp_3001_descriptor.xml"
               to="data/resourcemanager/MDR_Plugin_CameoMcp_3001_descriptor.xml"/>
-        <file from="plugins/com.cameomcp.plugin/*"
-              to="plugins/com.cameomcp.plugin/*"/>
+        <!-- Explicit entries: Resource Manager does not reliably expand a bare '*' recursively -->
+        <file from="plugins/com.cameomcp.plugin/plugin.xml"
+              to="plugins/com.cameomcp.plugin/plugin.xml"/>
+        <file from="plugins/com.cameomcp.plugin/cameo-mcp-plugin.jar"
+              to="plugins/com.cameomcp.plugin/cameo-mcp-plugin.jar"/>
+        <file from="plugins/com.cameomcp.plugin/cameo-mcp-stdio.jar"
+              to="plugins/com.cameomcp.plugin/cameo-mcp-stdio.jar"/>
+        <file from="plugins/com.cameomcp.plugin/README.md"
+              to="plugins/com.cameomcp.plugin/README.md"/>
+        <file from="plugins/com.cameomcp.plugin/AGENTS.md"
+              to="plugins/com.cameomcp.plugin/AGENTS.md"/>
+        <file from="plugins/com.cameomcp.plugin/skills/cameo-mcp/SKILL.md"
+              to="plugins/com.cameomcp.plugin/skills/cameo-mcp/SKILL.md"/>
+        <file from="plugins/com.cameomcp.plugin/schemas/mcp-tools-manifest.json"
+              to="plugins/com.cameomcp.plugin/schemas/mcp-tools-manifest.json"/>
     </installation>
 </resourceDescriptor>

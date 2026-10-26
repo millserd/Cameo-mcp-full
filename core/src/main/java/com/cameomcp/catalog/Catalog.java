@@ -29,10 +29,10 @@ public final class Catalog {
 
     public static String loadFullManifestJson() {
         try (InputStream is = Catalog.class.getResourceAsStream("/schemas/mcp-tools-manifest.json")) {
-            if (is == null) return "{"totalTools":365,"tools":[]}";
+            if (is == null) return "{\"totalTools\":365,\"tools\":[]}";
             return new String(is.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {
-            return "{"totalTools":365,"tools":[]}";
+            return "{\"totalTools\":365,\"tools\":[]}";
         }
     }
 }

@@ -4,6 +4,9 @@ import com.nomagic.magicdraw.core.Application;
 import com.nomagic.magicdraw.core.GUILog;
 
 import javax.swing.SwingUtilities;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -57,6 +60,8 @@ public final class CameoLog {
             LOG_RING.pollFirst();
         }
 
+        appendToFile(formatted + ("ERROR".equals(level) && !lastErrorTrace.isEmpty() ? "\n" + lastErrorTrace : ""));
+
         if ("ERROR".equals(level)) {
             MD_LOGGER.log(Level.SEVERE, "[Cameo MCP] " + message);
         } else if ("WARN".equals(level)) {
@@ -81,6 +86,18 @@ public final class CameoLog {
         } else {
             SwingUtilities.invokeLater(guiTask);
         }
+    }
+
+    /** java.util.logging does not reach Cameo's msosa.log/md.log, so also keep our own file. */
+    private static synchronized void appendToFile(String line) {
+        try {
+            File f = new File(new File(System.getProperty("user.home"), ".cameo-mcp"), "cameo-mcp.log");
+            f.getParentFile().mkdirs();
+            if (f.length() > 5_000_000) f.delete();
+            try (PrintWriter w = new PrintWriter(new FileWriter(f, true))) {
+                w.println(line);
+            }
+        } catch (Throwable ignored) {}
     }
 
     public static ConcurrentLinkedDeque<String> getRecentLogs() {

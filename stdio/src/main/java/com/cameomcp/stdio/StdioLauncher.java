@@ -16,7 +16,7 @@ import java.time.Duration;
  * Pure-Java Stdio Launcher & CLI Inspector (com.cameomcp.stdio.StdioLauncher).
  *
  * Aligned with millserd/Cameo-mcp StdioLauncher.java:
- * - Bridges standard IO (stdio) for desktop AI clients (Claude Code, Claude Desktop, Cursor, VS Code, Gemini CLI)
+ * - Bridges standard IO (stdio) for desktop AI clients (any MCP-capable client or IDE)
  *   to the active Cameo plugin HTTP endpoint (http://127.0.0.1:18740/mcp).
  * - Supports CLI flags:
  *     --host <host>         (default 127.0.0.1)
@@ -89,7 +89,7 @@ public final class StdioLauncher {
         }
 
         if (callTool != null) {
-            String rpc = String.format("{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"%s","arguments":%s}}",
+            String rpc = String.format("{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"%s\",\"arguments\":%s}}",
                     callTool, callArgsJson);
             HttpRequest.Builder rb = HttpRequest.newBuilder(URI.create(mcpUrl))
                     .header("Content-Type", "application/json; charset=utf-8")
@@ -124,12 +124,11 @@ public final class StdioLauncher {
                 sessionId = resp.headers().firstValue("Mcp-Session-Id").orElse(sessionId);
                 String body = resp.body();
                 if (body != null && !body.isBlank()) {
-                    out.println(body.replace("
-", " ").replace("", ""));
+                    out.println(body.replace("\n", " ").replace("\r", ""));
                 }
             } catch (Exception e) {
-                out.println("{"jsonrpc":"2.0","id":null,"error":{"code":-32000,"message":"Cannot reach Cameo MCP at "
-                        + mcpUrl + ". Verify Cameo 2024x/2026x is running and check MCP > MCP Server Status."}}");
+                out.println("{\"jsonrpc\":\"2.0\",\"id\":null,\"error\":{\"code\":-32000,\"message\":\"Cannot reach Cameo MCP at "
+                        + mcpUrl + ". Verify Cameo 2024x/2026x is running and check MCP > MCP Server Status.\"}}");
             }
         }
     }

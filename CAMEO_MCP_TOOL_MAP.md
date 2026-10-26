@@ -4,7 +4,7 @@
 
 | Architectural Layer | [`millserd/Cameo-mcp`](https://github.com/millserd/Cameo-mcp) | [`ajhcs/cameo-mcp-bridge`](https://github.com/ajhcs/cameo-mcp-bridge) | Unified Alignment in `com.cameomcp.plugin` (v3.1.0) |
 | :--- | :--- | :--- | :--- |
-| **Java Package & Plugin ID** | `com.cameomcp.*` / `com.cameomcp.plugin` | `com.claude.cameo.bridge` | Uses `com.cameomcp.catalog`, `com.cameomcp.mcp`, `com.cameomcp.plugin`, `com.cameomcp.stdio`, and plugin ID `com.cameomcp.plugin` |
+| **Java Package & Plugin ID** | `com.cameomcp.*` / `com.cameomcp.plugin` | separate bridge plugin ID | Uses `com.cameomcp.catalog`, `com.cameomcp.mcp`, `com.cameomcp.plugin`, `com.cameomcp.stdio`, and plugin ID `com.cameomcp.plugin` |
 | **Catalog Organization** | 7 Catalog classes (`ServerTools`, `ModelTools`, `DiagramTools`, `ArtifactTools`, `AdvancedTools`, `AnalysisTools`, `Sysml2Tools`) — 183 tools | 16 handler families — 162 tools | Retains the exact 7 `com.cameomcp.catalog.*` classes and merges all 183 `millserd` tools + all 162 `ajhcs` tools + 60 OpenAPI tools = **365 unique tools** |
 | **MCP Prompts & Resources** | `CatalogPrompts` (`model_system_structure`, `trace_requirements`, `review_model_quality`, `build_state_machine`) + `cameo://guide`, `cameo://tools` | Static README | Implements `prompts/list` for all 4 `CatalogPrompts` and `resources/list` for `cameo://guide`, `cameo://tools`, and `cameo://skill/cameo-mcp` |
 | **In-App Cameo UI & Logging** | `McpMenuConfigurator` (top-level `MCP` menu), `McpStatusWindow`, `ClientConfigs`, `ConnectionTest`, `CameoLog` (`[Cameo MCP]`) | None | Full implementation of `McpMenuConfigurator`, `McpStatusWindow`, `ClientConfigs`, `ConnectionTest`, and `CameoLog` (`GUILog` + `md.log`) |

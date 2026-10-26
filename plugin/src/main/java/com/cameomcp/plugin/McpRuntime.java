@@ -116,7 +116,7 @@ public class McpRuntime {
 
     public void recordModelEvent(String type, String name, String id) {
         long seq = eventSeq.incrementAndGet();
-        modelEvents.add(String.format("{"seq":%d,"type":"%s","name":"%s","id":"%s"}",
+        modelEvents.add(String.format("{\"seq\":%d,\"type\":\"%s\",\"name\":\"%s\",\"id\":\"%s\"}",
                 seq, escapeJson(type), escapeJson(name), escapeJson(id)));
         while (modelEvents.size() > 500) {
             modelEvents.remove(0);
@@ -127,12 +127,12 @@ public class McpRuntime {
         totalRequests.incrementAndGet();
         String origin = ex.getRequestHeaders().getFirst("Origin");
         if (!callGuard.verifyOrigin(origin)) {
-            sendJson(ex, 403, "{"error":"Forbidden Origin header"}");
+            sendJson(ex, 403, "{\"error\":\"Forbidden Origin header\"}");
             return;
         }
         String auth = ex.getRequestHeaders().getFirst("Authorization");
         if (!callGuard.verifyBearerToken(auth)) {
-            sendJson(ex, 401, "{"error":"Unauthorized Bearer token"}");
+            sendJson(ex, 401, "{\"error\":\"Unauthorized Bearer token\"}");
             return;
         }
 
@@ -140,7 +140,7 @@ public class McpRuntime {
         if ("GET".equalsIgnoreCase(method)) {
             // Per millserd/Cameo-mcp McpHttpTransport: GET /mcp returns 405 (SSE push disabled; standard HTTP JSON-RPC used)
             ex.getResponseHeaders().set("Allow", "POST, DELETE");
-            sendJson(ex, 405, "{"error":"Method Not Allowed: use POST /mcp for JSON-RPC 2.0 requests"}");
+            sendJson(ex, 405, "{\"error\":\"Method Not Allowed: use POST /mcp for JSON-RPC 2.0 requests\"}");
             return;
         }
         if ("DELETE".equalsIgnoreCase(method)) {
@@ -149,11 +149,11 @@ public class McpRuntime {
                 activeSessions.remove(sessionId);
                 CameoLog.info("Terminated MCP session: " + sessionId);
             }
-            sendJson(ex, 200, "{"terminated":true}");
+            sendJson(ex, 200, "{\"terminated\":true}");
             return;
         }
         if (!"POST".equalsIgnoreCase(method)) {
-            sendJson(ex, 405, "{"error":"Method Not Allowed"}");
+            sendJson(ex, 405, "{\"error\":\"Method Not Allowed\"}");
             return;
         }
 
@@ -178,12 +178,12 @@ public class McpRuntime {
         totalRequests.incrementAndGet();
         Project proj = Application.getInstance().getProject();
         String json = String.format(
-                "{"status":"ok","pluginId":"com.cameomcp.plugin","version":"3.1.0"," +
-                ""endpoint":"http://%s:%d/mcp","port":%d,"cameoRelease":"%s","javaVersion":"%s"," +
-                ""connectedClients":%d,"macrosAllowed":%s," +
-                ""compatibility":{"clientCompatible":true,"supports2024x":true,"supports2026x":true}," +
-                ""project":{"open":%s,"name":"%s","primaryModelId":"%s","isDirty":%s}," +
-                ""totalTools":365,"families":["server","model","diagrams","artifacts","advanced","analysis","sysml2"]}",
+                "{\"status\":\"ok\",\"pluginId\":\"com.cameomcp.plugin\",\"version\":\"3.1.0\"," +
+                "\"endpoint\":\"http://%s:%d/mcp\",\"port\":%d,\"cameoRelease\":\"%s\",\"javaVersion\":\"%s\"," +
+                "\"connectedClients\":%d,\"macrosAllowed\":%s," +
+                "\"compatibility\":{\"clientCompatible\":true,\"supports2024x\":true,\"supports2026x\":true}," +
+                "\"project\":{\"open\":%s,\"name\":\"%s\",\"primaryModelId\":\"%s\",\"isDirty\":%s}," +
+                "\"totalTools\":365,\"families\":[\"server\",\"model\",\"diagrams\",\"artifacts\",\"advanced\",\"analysis\",\"sysml2\"]}",
                 settings.getHost(), settings.getPort(), settings.getPort(),
                 escapeJson(detectCameoRelease()),
                 escapeJson(System.getProperty("java.version")),
@@ -206,7 +206,7 @@ public class McpRuntime {
         String idRaw = extractJsonId(rawJson);
         String rpcMethod = extractJsonString(rawJson, "method");
         if (rpcMethod == null || rpcMethod.isBlank()) {
-            return "{"jsonrpc":"2.0","id":" + idRaw + ","error":{"code":-32600,"message":"Invalid JSON-RPC request"}}";
+            return "{\"jsonrpc\":\"2.0\",\"id\":" + idRaw + ",\"error\":{\"code\":-32600,\"message\":\"Invalid JSON-RPC request\"}}";
         }
 
         try {
@@ -215,50 +215,50 @@ public class McpRuntime {
                 case "notifications/cancelled":
                     return "";
                 case "ping":
-                    return "{"jsonrpc":"2.0","id":" + idRaw + ","result":{}}";
+                    return "{\"jsonrpc\":\"2.0\",\"id\":" + idRaw + ",\"result\":{}}";
                 case "initialize":
                     CameoLog.info("MCP Client initialized session " + sessionId);
-                    return "{"jsonrpc":"2.0","id":" + idRaw + ","result":{" +
-                           ""protocolVersion":"2024-11-05"," +
-                           ""capabilities":{"tools":{"listChanged":false},"resources":{"subscribe":false,"listChanged":false},"prompts":{"listChanged":false}}," +
-                           ""serverInfo":{"name":"cameo-mcp","version":"3.1.0"}}}";
+                    return "{\"jsonrpc\":\"2.0\",\"id\":" + idRaw + ",\"result\":{" +
+                           "\"protocolVersion\":\"2024-11-05\"," +
+                           "\"capabilities\":{\"tools\":{\"listChanged\":false},\"resources\":{\"subscribe\":false,\"listChanged\":false},\"prompts\":{\"listChanged\":false}}," +
+                           "\"serverInfo\":{\"name\":\"cameo-mcp\",\"version\":\"3.1.0\"}}}";
                 case "prompts/list":
-                    return "{"jsonrpc":"2.0","id":" + idRaw + ","result":{"prompts":" + CatalogPrompts.listPromptsJson() + "}}";
+                    return "{\"jsonrpc\":\"2.0\",\"id\":" + idRaw + ",\"result\":{\"prompts\":" + CatalogPrompts.listPromptsJson() + "}}";
                 case "resources/list":
-                    return "{"jsonrpc":"2.0","id":" + idRaw + ","result":{"resources":[" +
-                           "{"uri":"cameo://guide","name":"Cameo MCP Agent Workflow Guide","mimeType":"text/markdown"}," +
-                           "{"uri":"cameo://tools","name":"Cameo MCP 365-Tool Catalog Manifest","mimeType":"application/json"}," +
-                           "{"uri":"cameo://skill/cameo-mcp","name":"Cameo MCP Portable Skill Definition","mimeType":"text/markdown"}" +
+                    return "{\"jsonrpc\":\"2.0\",\"id\":" + idRaw + ",\"result\":{\"resources\":[" +
+                           "{\"uri\":\"cameo://guide\",\"name\":\"Cameo MCP Agent Workflow Guide\",\"mimeType\":\"text/markdown\"}," +
+                           "{\"uri\":\"cameo://tools\",\"name\":\"Cameo MCP 365-Tool Catalog Manifest\",\"mimeType\":\"application/json\"}," +
+                           "{\"uri\":\"cameo://skill/cameo-mcp\",\"name\":\"Cameo MCP Portable Skill Definition\",\"mimeType\":\"text/markdown\"}" +
                            "]}}";
                 case "resources/read": {
                     String uri = extractJsonString(rawJson, "uri");
                     String content = (uri != null && uri.contains("tools"))
                             ? Catalog.loadFullManifestJson()
                             : loadResourceText("/skills/cameo-mcp/SKILL.md");
-                    return "{"jsonrpc":"2.0","id":" + idRaw + ","result":{"contents":[{"uri":"" +
-                           escapeJson(uri != null ? uri : "cameo://guide") + "","mimeType":"text/markdown","text":"" +
-                           escapeJson(content) + ""}]}}";
+                    return "{\"jsonrpc\":\"2.0\",\"id\":" + idRaw + ",\"result\":{\"contents\":[{\"uri\":\"" +
+                           escapeJson(uri != null ? uri : "cameo://guide") + "\",\"mimeType\":\"text/markdown\",\"text\":\"" +
+                           escapeJson(content) + "\"}]}}";
                 }
                 case "tools/list": {
                     String manifest = Catalog.loadFullManifestJson();
-                    int idx = manifest.indexOf(""tools":");
+                    int idx = manifest.indexOf("\"tools\":");
                     String toolsArr = idx >= 0 ? manifest.substring(idx + 8, manifest.lastIndexOf('}')).trim() : "[]";
-                    return "{"jsonrpc":"2.0","id":" + idRaw + ","result":{"tools":" + toolsArr + "}}";
+                    return "{\"jsonrpc\":\"2.0\",\"id\":" + idRaw + ",\"result\":{\"tools\":" + toolsArr + "}}";
                 }
                 case "tools/call": {
                     String toolName = extractToolCallName(rawJson);
                     CameoLog.info("Executing MCP tool: " + toolName);
                     String toolOutput = executeTool(toolName, rawJson);
-                    return "{"jsonrpc":"2.0","id":" + idRaw + ","result":{"content":[{"type":"text","text":"" +
-                           escapeJson(toolOutput) + ""}],"isError":false}}";
+                    return "{\"jsonrpc\":\"2.0\",\"id\":" + idRaw + ",\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"" +
+                           escapeJson(toolOutput) + "\"}],\"isError\":false}}";
                 }
                 default:
-                    return "{"jsonrpc":"2.0","id":" + idRaw + ","error":{"code":-32601,"message":"Unknown method: " + escapeJson(rpcMethod) + ""}}";
+                    return "{\"jsonrpc\":\"2.0\",\"id\":" + idRaw + ",\"error\":{\"code\":-32601,\"message\":\"Unknown method: " + escapeJson(rpcMethod) + "\"}}";
             }
         } catch (Exception e) {
             CameoLog.error("Error in MCP method " + rpcMethod, e);
-            return "{"jsonrpc":"2.0","id":" + idRaw + ","result":{"content":[{"type":"text","text":"{\"error\":\"" +
-                   escapeJson(e.getMessage()) + "\"}"}],"isError":true}}";
+            return "{\"jsonrpc\":\"2.0\",\"id\":" + idRaw + ",\"result\":{\"content\":[{\"type\":\"text\",\"text\":\"{\\\"error\\\":\\\"" +
+                   escapeJson(escapeJson(e.getMessage())) + "\\\"}\"}],\"isError\":true}}";
         }
     }
 
@@ -267,19 +267,19 @@ public class McpRuntime {
         if ("cameo_log".equals(toolName) || "cameo_write_gui_log".equals(toolName)) {
             String msg = extractJsonString(rawJson, "message");
             CameoLog.info(msg != null ? msg : "Agent log ping");
-            return "{"logged":true}";
+            return "{\"logged\":true}";
         }
         if ("cameo_get_last_error".equals(toolName)) {
-            return "{"lastError":"" + escapeJson(CameoLog.getLastErrorTrace()) + ""}";
+            return "{\"lastError\":\"" + escapeJson(CameoLog.getLastErrorTrace()) + "\"}";
         }
         if ("cameo_list_families".equals(toolName)) {
-            return "{"families":{"server":19,"model":52,"diagrams":66,"artifacts":48,"advanced":100,"analysis":52,"sysml2":28},"totalTools":365}";
+            return "{\"families\":{\"server\":19,\"model\":52,\"diagrams\":66,\"artifacts\":48,\"advanced\":100,\"analysis\":52,\"sysml2\":28},\"totalTools\":365}";
         }
         if ("cameo_list_prompts".equals(toolName)) {
-            return "{"prompts":" + CatalogPrompts.listPromptsJson() + "}";
+            return "{\"prompts\":" + CatalogPrompts.listPromptsJson() + "}";
         }
         return String.format(
-                "{"status":"ok","tool":"%s","project":"%s","release":"%s"}",
+                "{\"status\":\"ok\",\"tool\":\"%s\",\"project\":\"%s\",\"release\":\"%s\"}",
                 escapeJson(toolName),
                 proj != null ? escapeJson(proj.getName()) : "none",
                 escapeJson(detectCameoRelease())
@@ -360,12 +360,11 @@ public class McpRuntime {
 
     public static String escapeJson(String s) {
         if (s == null) return "";
-        return s.replace("\", "\\").replace(""", "\"").replace("
-", "\n").replace("", "\r");
+        return s.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r");
     }
 
     public static String extractJsonId(String json) {
-        int idx = json.indexOf(""id"");
+        int idx = json.indexOf("\"id\"");
         if (idx < 0) return "null";
         int colon = json.indexOf(':', idx);
         if (colon < 0) return "null";
@@ -382,7 +381,7 @@ public class McpRuntime {
     }
 
     public static String extractJsonString(String json, String key) {
-        String pat = """ + key + """;
+        String pat = "\"" + key + "\"";
         int idx = json.indexOf(pat);
         if (idx < 0) return null;
         int colon = json.indexOf(':', idx + pat.length());
@@ -390,14 +389,14 @@ public class McpRuntime {
         int q1 = json.indexOf('"', colon + 1);
         if (q1 < 0) return null;
         int q2 = json.indexOf('"', q1 + 1);
-        while (q2 > 0 && json.charAt(q2 - 1) == '\') {
+        while (q2 > 0 && json.charAt(q2 - 1) == '\\') {
             q2 = json.indexOf('"', q2 + 1);
         }
         return q2 > q1 ? json.substring(q1 + 1, q2) : null;
     }
 
     private static String extractToolCallName(String json) {
-        int p = json.indexOf(""params"");
+        int p = json.indexOf("\"params\"");
         if (p >= 0) {
             String n = extractJsonString(json.substring(p), "name");
             if (n != null) return n;

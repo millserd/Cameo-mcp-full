@@ -6,6 +6,7 @@ import com.nomagic.actions.AMConfigurator;
 import com.nomagic.actions.ActionsCategory;
 import com.nomagic.actions.ActionsManager;
 import com.nomagic.magicdraw.actions.MDAction;
+import com.nomagic.magicdraw.actions.MDActionsCategory;
 
 import java.awt.event.ActionEvent;
 
@@ -29,16 +30,25 @@ public class McpMenuConfigurator implements AMConfigurator {
 
     @Override
     public void configure(ActionsManager manager) {
-        ActionsCategory mcpMenu = new ActionsCategory("CAMEO_MCP_TOP_MENU", "MCP");
-        mcpMenu.setNested(true);
+        CameoLog.info("Registering MCP main menu");
+        // Top-level main-menu categories must be MDActionsCategory (see Cameo openapi/examples MainMenuConfigurator);
+        // a plain ActionsCategory showed the menu but its items never reached actionPerformed on 2026x.
+        ActionsCategory mcpMenu = (ActionsCategory) manager.getActionFor("CAMEO_MCP_TOP_MENU");
+        if (mcpMenu == null) {
+            mcpMenu = new MDActionsCategory("CAMEO_MCP_TOP_MENU", "MCP");
+            mcpMenu.setNested(true);
+            manager.addCategory(mcpMenu);
+        }
 
         MDAction statusWindowAction = new MDAction(
                 "CAMEO_MCP_STATUS_WINDOW",
                 "MCP Server Status...",
                 null,
-                "Open the Cameo MCP Server Status, Port, Bearer Token, and Live Audit Window") {
+                null) {
+            { setDescription("Open the Cameo MCP Server Status, Port, Bearer Token, and Live Audit Window"); }
             @Override
             public void actionPerformed(ActionEvent e) {
+                CameoLog.info("Menu action: " + getName());
                 McpStatusWindow.showWindow(plugin);
             }
         };
@@ -47,9 +57,11 @@ public class McpMenuConfigurator implements AMConfigurator {
                 "CAMEO_MCP_RUN_SELF_TEST",
                 "Run Connection Self-Test (Log to Cameo)",
                 null,
-                "Verify local HTTP /status and /mcp endpoints and publish results to Cameo Notification Log") {
+                null) {
+            { setDescription("Verify local HTTP /status and /mcp endpoints and publish results to Cameo Notification Log"); }
             @Override
             public void actionPerformed(ActionEvent e) {
+                CameoLog.info("Menu action: " + getName());
                 String report = ConnectionTest.runSelfTest(plugin.getSettings().getHost(), plugin.getSettings().getPort());
                 CameoLog.info(report);
             }
@@ -59,9 +71,11 @@ public class McpMenuConfigurator implements AMConfigurator {
                 "CAMEO_MCP_RESTART_RUNTIME",
                 "Restart MCP Server",
                 null,
-                "Restart the embedded MCP HTTP & JSON-RPC server") {
+                null) {
+            { setDescription("Restart the embedded MCP HTTP & JSON-RPC server"); }
             @Override
             public void actionPerformed(ActionEvent e) {
+                CameoLog.info("Menu action: " + getName());
                 plugin.getRuntime().start();
             }
         };
@@ -70,9 +84,11 @@ public class McpMenuConfigurator implements AMConfigurator {
                 "CAMEO_MCP_COPY_CLIENT_CONFIG",
                 "Copy MCP Client Config JSON",
                 null,
-                "Copy MCP client configuration snippet to system clipboard") {
+                null) {
+            { setDescription("Copy MCP client configuration snippet to system clipboard"); }
             @Override
             public void actionPerformed(ActionEvent e) {
+                CameoLog.info("Menu action: " + getName());
                 ClientConfigs.copyToClipboard(plugin.getSettings().getHost(), plugin.getSettings().getPort());
                 CameoLog.info("Copied MCP client configuration JSON to clipboard.");
             }
@@ -83,7 +99,6 @@ public class McpMenuConfigurator implements AMConfigurator {
         mcpMenu.addAction(restartAction);
         mcpMenu.addAction(copyConfigAction);
 
-        manager.addCategory(mcpMenu);
     }
 
     @Override
