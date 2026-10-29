@@ -21,6 +21,8 @@ public final class Tools {
     public record Image(String base64, String mimeType, JsonNode meta) {}
 
     static final int DEFAULT_TIMEOUT_S = 120;
+    /** Upper bound so a few slow calls cannot hold all of the server's threads for long (the stdio bridge waits a bit longer). */
+    static final int MAX_TIMEOUT_S = 600;
 
     private Tools() {}
 
@@ -56,6 +58,10 @@ public final class Tools {
 
     public static Object execute(Tool tool, JsonNode args, CallGuard callGuard) throws Exception {
         guard = callGuard;
+        int timeout = args.path("timeoutSeconds").asInt(DEFAULT_TIMEOUT_S);
+        if (timeout < 1 || timeout > MAX_TIMEOUT_S) {
+            throw new ToolError("timeoutSeconds must be 1-" + MAX_TIMEOUT_S + " (default " + DEFAULT_TIMEOUT_S + ")");
+        }
         FutureTask<Object> task = new FutureTask<>(() -> run(tool, args));
         if (tool.mode() == Tool.Mode.BACKGROUND) {
             // Blocking calls (simulation) run on their own thread so Cameo's UI thread stays free.
@@ -64,7 +70,6 @@ public final class Tools {
             th.start();
         } else if (SwingUtilities.isEventDispatchThread()) task.run();
         else SwingUtilities.invokeLater(task);
-        int timeout = args.path("timeoutSeconds").asInt(DEFAULT_TIMEOUT_S);
         try {
             return task.get(timeout, TimeUnit.SECONDS);
         } catch (TimeoutException e) {

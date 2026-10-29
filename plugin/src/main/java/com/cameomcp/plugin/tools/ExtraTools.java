@@ -75,12 +75,15 @@ final class ExtraTools {
         Tools.add(m, "cameo_generate_report", APP, c -> {
             Project p = c.project();
             String name = c.str("template");
-            TemplateBean t = null;
-            for (TemplateBean x : TemplateHelper.listTemplates(false)) if (name.equalsIgnoreCase(x.getName())) t = x;
-            if (t == null) throw new ToolError("No report template '" + name + "'; see cameo_list_report_templates");
+            TemplateBean shared = null;
+            for (TemplateBean x : TemplateHelper.listTemplates(false)) if (name.equalsIgnoreCase(x.getName())) shared = x;
+            if (shared == null) throw new ToolError("No report template '" + name + "'; see cameo_list_report_templates");
+            // Work on copies: the beans Report Wizard returns are the ones its own dialog uses and saves.
+            TemplateBean t = (TemplateBean) shared.clone();
             ReportBean r = null;
-            if (c.has("report")) for (ReportBean x : t.getReportList()) if (c.str("report").equalsIgnoreCase(x.getName())) r = x;
-            if (r == null) r = t.getDefaultReport() != null ? t.getDefaultReport() : t.getReportList().isEmpty() ? new ReportBean() : t.getReportList().get(0);
+            if (c.has("report")) for (ReportBean x : shared.getReportList()) if (c.str("report").equalsIgnoreCase(x.getName())) r = x;
+            if (r == null) r = shared.getDefaultReport() != null ? shared.getDefaultReport() : shared.getReportList().isEmpty() ? null : shared.getReportList().get(0);
+            r = r == null ? new ReportBean() : (ReportBean) r.clone();
             Set<Element> scope = new LinkedHashSet<>(c.els("scopeIds"));
             if (scope.isEmpty()) scope.add(c.model());
             PackageSelectionBean sel = new PackageSelectionBean();
@@ -90,7 +93,7 @@ final class ExtraTools {
             r.setSelectedPackage(sel);
             File out = new File(c.str("outputFile"));
             if (out.getParentFile() != null) out.getParentFile().mkdirs();
-            ReportPropertyBean props = r.getReportProperty() != null ? r.getReportProperty() : new ReportPropertyBean();
+            ReportPropertyBean props = r.getReportProperty() != null ? (ReportPropertyBean) r.getReportProperty().clone() : new ReportPropertyBean();
             props.setOutputFile(out.getAbsolutePath());
             props.setDisplayInViewer(false);
             r.setReportProperty(props);

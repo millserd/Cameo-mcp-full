@@ -26,6 +26,9 @@ import java.time.Duration;
  */
 public final class StdioLauncher {
 
+    /** Longest tool timeout the plugin accepts (timeoutSeconds); the HTTP wait is a little longer. */
+    static final int TOOL_TIMEOUT_MAX_S = 600;
+
     public static void main(String[] args) throws Exception {
         String host = "127.0.0.1";
         int port = 18740;
@@ -114,7 +117,7 @@ public final class StdioLauncher {
             try {
                 HttpResponse<String> r = post(client, mcp, token, session, line);
                 session = r.headers().firstValue("Mcp-Session-Id").orElse(session);
-                if (r.body() != null && !r.body().isBlank()) out.println(r.body().replace("\n", " ").replace("\r", ""));
+                if (r.body() != null && !r.body().isBlank()) out.println(withId(r.body(), id).replace("\n", " ").replace("\r", ""));
             } catch (Exception e) {
                 if (id == null) continue; // a notification gets no reply
                 ObjectNode err = Catalog.JSON.createObjectNode().put("jsonrpc", "2.0");
@@ -126,10 +129,25 @@ public final class StdioLauncher {
         }
     }
 
+    /** Errors the server sends before reading the request (401, 403, 500) carry id null; give them the request's id. */
+    static String withId(String body, JsonNode id) {
+        if (id == null || id.isNull()) return body;
+        try {
+            JsonNode j = Catalog.JSON.readTree(body);
+            if (j instanceof ObjectNode o && o.has("error") && (o.get("id") == null || o.get("id").isNull())) {
+                o.set("id", id);
+                return o.toString();
+            }
+        } catch (Exception ignored) {
+            // not JSON: pass it through unchanged
+        }
+        return body;
+    }
+
     private static HttpResponse<String> post(HttpClient client, URI mcp, String token, String session, String body) throws Exception {
         HttpRequest.Builder rb = HttpRequest.newBuilder(mcp)
                 .header("Content-Type", "application/json")
-                .timeout(Duration.ofSeconds(180))
+                .timeout(Duration.ofSeconds(TOOL_TIMEOUT_MAX_S + 30))
                 .POST(HttpRequest.BodyPublishers.ofString(body, StandardCharsets.UTF_8));
         if (token != null && !token.isBlank()) rb.header("Authorization", "Bearer " + token);
         if (session != null) rb.header("Mcp-Session-Id", session);

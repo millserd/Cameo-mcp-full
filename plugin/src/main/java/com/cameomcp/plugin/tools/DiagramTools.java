@@ -419,7 +419,7 @@ final class DiagramTools {
         return d.getDiagramType().getType().equalsIgnoreCase(want);
     }
 
-    private static boolean isInside(Element e, Element scope) {
+    static boolean isInside(Element e, Element scope) {
         for (Element x = e; x != null; x = x.getOwner()) if (x == scope) return true;
         return false;
     }

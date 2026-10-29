@@ -27,6 +27,8 @@
               to="plugins/com.cameomcp.plugin/cameo-mcp-plugin.jar"/>
         <file from="plugins/com.cameomcp.plugin/cameo-mcp-stdio.jar"
               to="plugins/com.cameomcp.plugin/cameo-mcp-stdio.jar"/>
+        <file from="plugins/com.cameomcp.plugin/LICENSE"
+              to="plugins/com.cameomcp.plugin/LICENSE"/>
         <file from="plugins/com.cameomcp.plugin/README.md"
               to="plugins/com.cameomcp.plugin/README.md"/>
         <file from="plugins/com.cameomcp.plugin/AGENTS.md"

@@ -124,7 +124,8 @@ final class AnalysisTools {
             Element scope = c.has("scopeId") ? c.el("scopeId") : c.model();
             Set<Element> shown = new HashSet<>();
             for (DiagramPresentationElement d : p.getDiagrams()) {
-                if (Model.nearestPackage(d.getDiagram()) == null) continue;
+                // Only diagrams inside the scope are opened: loading every diagram of a large project takes minutes.
+                if (Model.nearestPackage(d.getDiagram()) == null || !DiagramTools.isInside(d.getDiagram(), scope)) continue;
                 d.ensureLoaded();
                 shown.addAll(d.getUsedModelElements(true));
             }
@@ -137,7 +138,8 @@ final class AnalysisTools {
                 if (shown.contains(e) || !Model.relationships(e, "both").isEmpty()) return;
                 if (total[0]++ < limit) a.add(Model.summary(e));
             });
-            return Catalog.JSON.createObjectNode().put("total", total[0]).set("orphans", a);
+            return Catalog.JSON.createObjectNode().put("total", total[0])
+                    .put("note", "Only diagrams inside the scope count as showing an element.").set("orphans", a);
         });
 
         Tools.add(m, "cameo_find_dead_end_flows", READ, c -> {

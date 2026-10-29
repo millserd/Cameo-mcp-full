@@ -200,10 +200,12 @@ final class MethodTools {
             if (v2(p)) {
                 validation = V2Items.validate(p, scopeId);
                 analysis = V2Items.evaluate(p, scopeId);
-                String text = V2Items.text(p, scopeId);
+                ObjectNode ex = V2Items.export(p, scopeId);
                 File f = new File(dir, "model.sysml");
-                Files.writeString(f.toPath(), text, StandardCharsets.UTF_8);
+                Files.writeString(f.toPath(), ex.path("text").asText(), StandardCharsets.UTF_8);
                 files.add(f.getName());
+                ex.remove("text");
+                packet.set("textExport", ex);
             } else {
                 validation = v1Coverage(c, p, scopeId);
                 File dd = new File(dir, "diagrams");
@@ -211,7 +213,7 @@ final class MethodTools {
                 Element scope = scopeId != null ? c.find(scopeId) : null;
                 for (DiagramPresentationElement d : p.getDiagrams()) {
                     if (n >= max) break;
-                    if (scope != null && !within(d.getDiagram(), scope)) continue;
+                    if (scope != null && !DiagramTools.isInside(d.getDiagram(), scope)) continue;
                     dd.mkdirs();
                     File f = new File(dd, safeName(d.getName()) + "-" + (n + 1) + ".png");
                     d.ensureLoaded();
@@ -324,11 +326,6 @@ final class MethodTools {
             if (v) ver++;
         }
         return o.put("requirements", total).put("satisfied", sat).put("verified", ver);
-    }
-
-    private static boolean within(Element e, Element scope) {
-        for (Element x = e; x != null; x = x.getOwner()) if (x == scope) return true;
-        return false;
     }
 
     private static String safeName(String s) { return s == null ? "diagram" : s.replaceAll("[^A-Za-z0-9._-]+", "_"); }
@@ -485,6 +482,11 @@ final class MethodTools {
         JsonNode ps = proof.path("summary");
         s.append("Findings: ").append(ps.path("findings").asInt()).append(" (auto-fixable: ").append(ps.path("autoFixable").asInt()).append(")\n\n");
         ps.path("byRule").fields().forEachRemaining(e -> s.append("- ").append(e.getKey()).append(": ").append(e.getValue().asInt()).append('\n'));
+        JsonNode tx = packet.path("textExport");
+        if (!tx.isMissingNode() && !tx.path("complete").asBoolean(true)) {
+            s.append("\n## SysML text export\n\nmodel.sysml is incomplete; these parts could not be written exactly:\n\n");
+            for (JsonNode g : tx.path("gaps")) s.append("- ").append(g.asText()).append('\n');
+        }
         s.append("\n## Files\n\n");
         for (JsonNode f : packet.path("files")) s.append("- ").append(f.asText()).append('\n');
         return s.toString();

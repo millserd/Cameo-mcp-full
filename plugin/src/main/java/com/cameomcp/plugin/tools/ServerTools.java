@@ -15,6 +15,7 @@ import com.nomagic.magicdraw.openapi.uml.SessionManager;
 import com.nomagic.magicdraw.plugins.Plugin;
 import com.nomagic.magicdraw.plugins.PluginUtils;
 import com.nomagic.magicdraw.ui.browser.Node;
+import com.nomagic.magicdraw.uml.BaseElement;
 import com.nomagic.magicdraw.uml.symbols.DiagramPresentationElement;
 import com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Element;
 
@@ -150,7 +151,9 @@ final class ServerTools {
         });
 
         Tools.add(m, "cameo_select_in_containment_tree", APP, c -> {
-            Element e = c.el("elementId");
+            String ref = c.str("elementId");
+            BaseElement e = c.project().getElementByID(ref);
+            if (e == null) e = c.project().getPrimaryModel() == null && Tools.v2Available ? V2Study.findBase(c.project(), ref) : c.find(ref);
             c.project().getBrowser().getContainmentTree().openNode(e, true);
             return Catalog.JSON.createObjectNode().put("selected", e.getID());
         });
@@ -199,11 +202,19 @@ final class ServerTools {
 
     private static Object history(Ctx c, boolean undo) {
         var h = c.project().getCommandHistory();
-        var cmd = undo ? h.getCommandForUndo() : h.getCommandForRedo();
-        if (cmd == null) throw new ToolError("Nothing to " + (undo ? "undo" : "redo"));
-        String name = cmd.getName();
-        if (undo) h.undo(); else h.redo();
-        return Catalog.JSON.createObjectNode().put(undo ? "undone" : "redone", name);
+        int steps = c.i("steps", 1);
+        if (steps < 1 || steps > 50) throw new ToolError("steps must be 1-50");
+        ArrayNode done = Catalog.JSON.createArrayNode();
+        for (int i = 0; i < steps; i++) {
+            var cmd = undo ? h.getCommandForUndo() : h.getCommandForRedo();
+            if (cmd == null) break;
+            done.add(String.valueOf(cmd.getName()));
+            if (undo) h.undo(); else h.redo();
+        }
+        if (done.isEmpty()) throw new ToolError("Nothing to " + (undo ? "undo" : "redo"));
+        ObjectNode o = Catalog.JSON.createObjectNode().put(undo ? "undone" : "redone", done.get(0).asText());
+        o.set("commands", done);
+        return o;
     }
 
     // Model change events: one listener per project, started on the first poll.
@@ -216,17 +227,24 @@ final class ServerTools {
 
         ChangeLog(Project p) {
             PropertyChangeListener l = ev -> {
-                if (!(ev.getSource() instanceof Element e)) return;
-                ObjectNode o = Catalog.JSON.createObjectNode().put("seq", seq.incrementAndGet())
-                        .put("property", ev.getPropertyName()).put("elementId", e.getID()).put("type", e.getHumanType());
-                String n = Model.name(e);
-                if (n != null) o.put("name", n);
-                synchronized (this) {
-                    events.addLast(o);
-                    if (events.size() > 1000) events.removeFirst();
-                }
+                if (ev.getSource() instanceof Element e) record(e, ev.getPropertyName());
             };
             p.getRepositoryListenerRegistry().addPropertyChangeListener(l, (RefObject) null);
+            // SysML v2 (KerML) elements do not go through the UML repository listener.
+            if (Tools.v2Available && p.getPrimaryModel() == null) V2Study.listen(p, this::record);
+        }
+
+        void record(BaseElement e, String property) {
+            ObjectNode o = Catalog.JSON.createObjectNode().put("seq", seq.incrementAndGet())
+                    .put("property", property).put("elementId", e.getID()).put("type", e.getHumanType());
+            String n = e instanceof Element ue ? Model.name(ue) : e.getHumanName();
+            String t = e.getHumanType();
+            if (n != null && t != null && n.startsWith(t + " ")) n = n.substring(t.length() + 1); // "Part Def Engine" -> "Engine"
+            if (n != null && !n.isEmpty()) o.put("name", n);
+            synchronized (this) {
+                events.addLast(o);
+                if (events.size() > 1000) events.removeFirst();
+            }
         }
     }
 }

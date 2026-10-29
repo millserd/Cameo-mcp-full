@@ -37,11 +37,40 @@ final class V2Study {
     }
 
     static Double number(Project p, String altRef, String featurePath) {
-        Feature f = V2.feature(V2.find(p, altRef), featurePath);
+        Element alt = V2.find(p, altRef);
+        Feature f = V2.feature(alt, featurePath);
         if (f == null) return null;
-        JsonNode v = V2.evaluate(f);
+        // Evaluate in the alternative itself, so inherited formulas use the alternative's own (redefined) values.
+        int dot = featurePath.lastIndexOf('.');
+        Element ctx = dot < 0 ? alt : V2.feature(alt, featurePath.substring(0, dot));
+        JsonNode v = V2.evaluate(f, ctx == null ? alt : ctx);
         return v.isNumber() ? v.asDouble() : null;
     }
 
     static ObjectNode ref(Project p, String r) { return V2.ref(V2.find(p, r)); }
+
+    /** Report every change to the project's own SysML v2 elements (not the libraries) to sink. */
+    static void listen(Project p, java.util.function.BiConsumer<com.nomagic.magicdraw.uml.BaseElement, String> sink) {
+        org.eclipse.emf.ecore.util.EContentAdapter adapter = new org.eclipse.emf.ecore.util.EContentAdapter() {
+            @Override
+            public void notifyChanged(org.eclipse.emf.common.notify.Notification n) {
+                super.notifyChanged(n);
+                if (n.isTouch() || !(n.getNotifier() instanceof com.nomagic.magicdraw.uml.BaseElement b)) return;
+                Object f = n.getFeature();
+                sink.accept(b, f instanceof org.eclipse.emf.ecore.ENamedElement ne ? ne.getName() : String.valueOf(f));
+            }
+        };
+        java.util.Set<org.eclipse.emf.ecore.resource.Resource> done = new java.util.HashSet<>();
+        for (com.dassault_systemes.modeler.kerml.model.kerml.Namespace r : V2.roots(p)) {
+            org.eclipse.emf.ecore.resource.Resource res = ((org.eclipse.emf.ecore.EObject) r).eResource();
+            if (res != null && done.add(res)) res.eAdapters().add(adapter);
+        }
+    }
+
+    /** A SysML v2 element by id or qualified name, as the BaseElement Cameo's UI works with. */
+    static com.nomagic.magicdraw.uml.BaseElement findBase(Project p, String ref) {
+        Element e = V2.find(p, ref);
+        if (e instanceof com.nomagic.magicdraw.uml.BaseElement b) return b;
+        throw new ToolError("Cannot select " + ref + " in the containment tree");
+    }
 }

@@ -254,6 +254,6 @@ final class ArtifactTools {
 
     private static String csv(String s) {
         if (s == null) return "";
-        return s.contains(",") || s.contains("\"") || s.contains("\n") ? "\"" + s.replace("\"", "\"\"") + "\"" : s;
+        return s.contains(",") || s.contains("\"") || s.contains("\n") || s.contains("\r") ? "\"" + s.replace("\"", "\"\"") + "\"" : s;
     }
 }

@@ -2,6 +2,8 @@ package com.cameomcp.plugin.tools;
 
 import com.cameomcp.catalog.Catalog;
 import com.dassault_systemes.modeler.kerml.model.kerml.*;
+import com.dassault_systemes.modeler.sysml.model.sysml.ObjectiveMembership;
+import com.dassault_systemes.modeler.sysml.model.sysml.RequirementConstraintMembership;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -105,73 +107,84 @@ final class Sysml2Tools {
 
         Tools.add(m, "cameo_sysml2_export_text", READ, c -> {
             Project p = v2(c);
-            StringBuilder sb = new StringBuilder();
             List<Element> els = new ArrayList<>();
             for (String ref : c.strs("elementIds")) els.add(V2.find(p, ref));
             if (els.isEmpty()) els.addAll(V2.roots(p));
-            for (Element e : els) sb.append(V2.text(e));
-            ObjectNode o = Catalog.JSON.createObjectNode();
+            V2.Export ex = V2.export(els);
+            ObjectNode o = exportJson(ex);
             if (c.has("filePath")) {
                 File f = new File(c.str("filePath"));
                 if (f.getParentFile() != null) f.getParentFile().mkdirs();
-                Files.writeString(f.toPath(), sb, StandardCharsets.UTF_8);
+                Files.writeString(f.toPath(), ex.text(), StandardCharsets.UTF_8);
                 o.put("file", f.getAbsolutePath());
             }
-            return o.put("text", sb.toString());
+            return o.put("text", ex.text());
         });
 
         Tools.add(m, "cameo_sysml2_set_property", APP, c -> {
             Project p = v2(c);
             Element e = V2.find(p, c.str("elementId"));
-            List<String> changed = new ArrayList<>();
-            // Multiplicity and expressions are parsed from text first (outside the session), then moved over.
-            Feature donor = null;
             String mult = c.opt("multiplicity"), vex = c.opt("valueExpression");
+            // Check every argument before anything is changed, so a bad argument never leaves partial edits behind.
+            boolean needsFeature = mult != null || vex != null || c.has("type") || c.has("value") || c.has("direction");
+            if (needsFeature && !(e instanceof Feature)) throw new ToolError("type, value, valueExpression, multiplicity and direction need a usage (feature), not " + V2.kind(e));
+            if ((c.has("isAbstract") || c.has("specializes")) && !(e instanceof Type)) throw new ToolError("isAbstract and specializes need a definition or usage, not " + V2.kind(e));
+            FeatureDirectionKind dir = null;
+            if (c.has("direction")) {
+                dir = FeatureDirectionKind.get(c.str("direction").toLowerCase(Locale.ROOT));
+                if (dir == null) throw new ToolError("direction must be in, out or inout");
+            }
+            List<Type> types = new ArrayList<>(), supers = new ArrayList<>();
+            for (String t : c.strs("type")) types.add(asType(p, t));
+            for (String s : c.strs("specializes")) supers.add(asType(p, s));
+            if (c.has("value") && !c.node("value").isValueNode()) throw new ToolError("value must be a number, boolean or string; use valueExpression for expressions");
+            boolean any = needsFeature || c.has("name") || c.has("shortName") || c.has("documentation") || c.has("isAbstract") || !supers.isEmpty();
+            if (!any) throw new ToolError("Nothing to set: give name, shortName, documentation, isAbstract, direction, type, specializes, multiplicity, value or valueExpression");
             if (mult != null || vex != null) {
-                if (!(e instanceof Feature f)) throw new ToolError("multiplicity/valueExpression need a feature (usage), not " + V2.kind(e));
+                String probe = "attribute __mcp_check" + (mult != null ? " [" + mult + "]" : "") + (vex != null ? " = " + vex : "") + ";";
+                Feature f = (Feature) e;
+                V2.Parsed parsed = V2.parse(p, V2.wrap(f.getOwningType() != null ? f.getOwningType() : f.getOwner(), probe, "__mcp_check"));
+                if (parsed.hasErrors()) throw new ToolError("multiplicity/valueExpression has errors; nothing was changed: " + parsed.diagnostics());
+            }
+            // Multiplicity and expressions are built by Cameo's text importer as a helper feature, then moved over.
+            Feature donor = null;
+            if (mult != null || vex != null) {
+                Feature f = (Feature) e;
                 Element ctxOwner = f.getOwningType() != null ? f.getOwningType() : f.getOwner();
                 String snippet = "attribute __mcp_donor" + (mult != null ? " [" + mult + "]" : "") + (vex != null ? " = " + vex : "") + ";";
                 List<Element> d = V2.addText(p, ctxOwner, snippet, false).elements();
                 donor = d.isEmpty() ? null : (Feature) d.get(0);
             }
             final Feature fDonor = donor;
-            Tools.inSession(p, "MCP: cameo_sysml2_set_property", () -> {
-                if (c.has("name")) { e.setDeclaredName(c.str("name")); changed.add("name"); }
-                if (c.has("shortName")) { e.setDeclaredShortName(c.str("shortName")); changed.add("shortName"); }
-                if (c.has("documentation")) { V2.setDocumentation(e, c.str("documentation")); changed.add("documentation"); }
-                if (c.has("isAbstract")) { ((Type) e).setIsAbstract(c.b("isAbstract", false)); changed.add("isAbstract"); }
-                if (c.has("direction")) {
-                    ((Feature) e).setDirection(FeatureDirectionKind.get(c.str("direction").toLowerCase(Locale.ROOT)));
-                    changed.add("direction");
-                }
-                if (c.has("type")) {
-                    if (!(e instanceof Feature f)) throw new ToolError("type needs a usage/feature");
-                    List<Type> types = new ArrayList<>();
-                    for (String t : c.strs("type")) types.add(asType(p, t));
-                    V2.setTypes(f, types);
-                    changed.add("type");
-                }
-                for (String s : c.strs("specializes")) {
-                    if (!(e instanceof Type t)) throw new ToolError("specializes needs a definition or usage");
-                    V2.addSpecialization(t, asType(p, s));
-                    changed.add("specializes " + s);
-                }
-                if (c.has("value")) {
-                    if (!(e instanceof Feature f)) throw new ToolError("value needs a feature (usage)");
-                    V2.setLiteral(f, c.node("value"));
-                    changed.add("value");
-                }
+            final FeatureDirectionKind fDir = dir;
+            List<String> changed = new ArrayList<>();
+            try {
+                Tools.inSession(p, "MCP: cameo_sysml2_set_property", () -> {
+                    if (c.has("name")) { e.setDeclaredName(c.str("name")); changed.add("name"); }
+                    if (c.has("shortName")) { e.setDeclaredShortName(c.str("shortName")); changed.add("shortName"); }
+                    if (c.has("documentation")) { V2.setDocumentation(e, c.str("documentation")); changed.add("documentation"); }
+                    if (c.has("isAbstract")) { ((Type) e).setIsAbstract(c.b("isAbstract", false)); changed.add("isAbstract"); }
+                    if (fDir != null) { ((Feature) e).setDirection(fDir); changed.add("direction"); }
+                    if (!types.isEmpty()) { V2.setTypes((Feature) e, types); changed.add("type"); }
+                    for (Type s : supers) { V2.addSpecialization((Type) e, s); changed.add("specializes " + V2.qn(s)); }
+                    if (c.has("value")) { V2.setLiteral((Feature) e, c.node("value")); changed.add("value"); }
+                    if (fDonor != null) {
+                        V2.transplant(fDonor, (Feature) e, vex != null, mult != null);
+                        if (mult != null) changed.add("multiplicity");
+                        if (vex != null) changed.add("valueExpression");
+                    }
+                    return null;
+                });
+            } catch (Exception | Error ex) {
                 if (fDonor != null) {
-                    V2.transplant(fDonor, (Feature) e, vex != null, mult != null);
-                    if (mult != null) changed.add("multiplicity");
-                    if (vex != null) changed.add("valueExpression");
+                    try { Tools.inSession(p, "MCP: remove helper", () -> { V2.delete(fDonor); return null; }); } catch (Exception ignored) { /* original error is reported */ }
                 }
-                return null;
-            });
-            if (changed.isEmpty()) throw new ToolError("Nothing to set: give name, shortName, documentation, isAbstract, direction, type, specializes, multiplicity, value or valueExpression");
+                throw ex;
+            }
             ObjectNode o = V2.details(e, true);
             ArrayNode ch = o.putArray("changed");
             changed.forEach(ch::add);
+            if (fDonor != null) o.put("undoSteps", 3);
             return o;
         });
 
@@ -282,12 +295,27 @@ final class Sysml2Tools {
         return s.append('}').toString();
     }
 
+    /** complete=false (with the list of gaps) whenever some construct could not be written exactly. */
+    static ObjectNode exportJson(V2.Export ex) {
+        ObjectNode o = Catalog.JSON.createObjectNode().put("complete", ex.gaps().isEmpty());
+        if (!ex.gaps().isEmpty()) {
+            ArrayNode g = o.putArray("gaps");
+            ex.gaps().forEach(g::add);
+        }
+        if (ex.syntheticNames() > 0) {
+            o.put("syntheticNames", ex.syntheticNames()).put("note", "Unnamed decision/merge/fork/join nodes were given names "
+                    + "(_decide1, ...) so successions can refer to them.");
+        }
+        return o;
+    }
+
     private static ObjectNode result(V2.Added added, String text) {
         ObjectNode o = Catalog.JSON.createObjectNode();
         ArrayNode a = o.putArray("created");
         for (Element e : added.elements()) a.add(V2.ref(e));
         if (text != null) o.put("text", text);
         if (!added.diagnostics().isEmpty()) o.set("diagnostics", added.diagnostics());
+        o.put("undoSteps", 2).put("note", "Cameo records this as two undo steps (import, then placement): call cameo_undo with steps=2 to remove it.");
         return o;
     }
 
@@ -320,13 +348,16 @@ final class Sysml2Tools {
         for (Element root : scope) V2.walkMembers(root, all::add);
         for (Element e : all) {
             String k = V2.kind(e);
-            if (k.endsWith("Definition") && e.getDeclaredName() == null) add(issues, counts, limit, e, "error", "unnamed-definition", "Definition has no name");
+            if (k.endsWith("Definition") && !k.equals("ConjugatedPortDefinition") && e.getDeclaredName() == null) add(issues, counts, limit, e, "error", "unnamed-definition", "Definition has no name");
             if (SHOULD_BE_TYPED.contains(k) && e instanceof Feature f && f.getOwnedTyping().isEmpty()
                     && f.getOwnedSpecialization().stream().noneMatch(s -> !s.isImplied())) {
                 add(issues, counts, limit, e, "warning", "untyped-usage", V2.keyword(e) + " '" + e.getDeclaredName() + "' has no type");
             }
             if (k.equals("RequirementUsage") || k.equals("RequirementDefinition")) {
-                if (!satisfied.contains(e) && !(e.getOwner() instanceof Feature)) add(issues, counts, limit, e, "info", "unsatisfied-requirement", "No satisfy relationship points to this requirement");
+                // Objectives of cases and requirements nested in other requirements are not satisfied on their own.
+                boolean nested = e.getOwner() instanceof Feature || e.getOwningRelationship() instanceof ObjectiveMembership
+                        || e.getOwningRelationship() instanceof RequirementConstraintMembership;
+                if (!satisfied.contains(e) && !nested) add(issues, counts, limit, e, "info", "unsatisfied-requirement", "No satisfy relationship points to this requirement");
                 if (V2.documentation(e) == null) add(issues, counts, limit, e, "info", "requirement-without-text", "Requirement has no doc text");
             }
             if (k.equals("ConstraintUsage") || k.equals("AssertConstraintUsage")) {

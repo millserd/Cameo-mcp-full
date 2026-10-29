@@ -27,15 +27,15 @@ Connection, discovery, logging, undo/redo, UI actions.
 | `cameo_get_system_logs` | Recent plugin log lines (every tool call and error is logged). | `lines` |
 | `cameo_log` | Write a message to Cameo's Notification window so the user can follow what the agent is doing. | `message`*, `level` |
 | `cameo_reset_session` | Cancel a Cameo editing session left open (for example by a failed script). Unsaved edits inside that session are discarded; only use it when no one is editing. | — |
-| `cameo_undo` | Undo the last change in Cameo (each write tool call is one undoable step). | — |
-| `cameo_redo` | Redo the last undone change. | — |
+| `cameo_undo` | Undo the last change(s) in Cameo. Most write tools are one undoable step; SysML v2 text writes report undoSteps (usually 2). | `steps` |
+| `cameo_redo` | Redo the last undone change(s). | `steps` |
 | `cameo_get_command_history` | Names of recent undoable commands and what undo/redo would do next. | `limit` |
 | `cameo_clear_command_history` | Clear Cameo's undo history. | — |
 | `cameo_get_ui_state` | What the user is looking at: the active diagram, its selected symbols, and the elements selected in the containment tree. | — |
 | `cameo_select_in_containment_tree` | Reveal and select an element in Cameo's containment tree. | `elementId`* |
 | `cameo_list_ui_actions` | Search Cameo main-menu actions (id and label) for use with cameo_invoke_ui_action. | `query`, `limit` |
 | `cameo_invoke_ui_action` | Run a Cameo main-menu action by id. Actions that open dialogs wait for the user. | `actionId`* |
-| `cameo_poll_model_change_events` | Model changes (element and property changes) since a sequence number. The first call starts recording. | `sinceSeq` |
+| `cameo_poll_model_change_events` | Model changes (element and property changes, UML and SysML v2) since a sequence number. The first call starts recording. | `sinceSeq` |
 
 ## Model (`model`, 29 tools)
 
@@ -160,11 +160,11 @@ Traceability, coverage, metrics, parametrics, trade studies, simulation.
 | `cameo_get_traceability_graph` | Nodes and edges reachable from an element through relationships, up to a depth. | `elementId`*, `direction`, `depth`, `relationshipTypes` |
 | `cameo_trace_coverage_analysis` | Requirement coverage in a scope: which requirements are satisfied and verified, percentages, and the unlinked ones. | `scopeId`, `includeDetails` |
 | `cameo_find_circular_dependencies` | Cycles of dependencies/generalizations/directed relationships between elements in a scope. | `scopeId`, `relationshipTypes` |
-| `cameo_get_orphan_elements` | Classifiers and packages in a scope that appear on no diagram and have no relationships. | `scopeId`, `limit` |
+| `cameo_get_orphan_elements` | Classifiers and packages in a scope that appear on no diagram inside that scope and have no relationships. | `scopeId`, `limit` |
 | `cameo_find_dead_end_flows` | Activity nodes with no outgoing flow (other than final nodes) or no incoming flow (other than initial nodes). | `activityId`* |
 | `cameo_check_state_reachability` | States not reachable from the initial pseudostate, and non-final states with no way out. | `stateMachineId`* |
 | `cameo_calculate_metrics` | Element counts by type and stereotype, relationships, diagrams and nesting depth in a scope. | `scopeId` |
-| `cameo_evaluate_parametrics` | Evaluate parametrics: every attribute value expression and constraint under an element, with pass/fail per constraint. SysML v2 uses Cameo's built-in evaluator (no Simulation Toolkit needed) and accepts what-if inputs that are rolled back afterwards; SysML v1 uses the Simulation Toolkit when installed, otherwise lists equations and current values. | `elementId`*, `inputs`, `outputs` |
+| `cameo_evaluate_parametrics` | Evaluate parametrics: every attribute value expression and constraint under an element, with pass/fail per constraint. SysML v2 uses Cameo's built-in evaluator (no Simulation Toolkit needed) and accepts what-if inputs that are rolled back afterwards. SysML v1: lists equations and current default values; solve them with cameo_run_simulation. | `elementId`*, `inputs` |
 | `cameo_run_trade_study` | Rank alternatives by weighted, min-max normalized criteria read from their attribute values (v2 evaluated values or v1 default values). Supports limits that make an alternative infeasible. | `alternatives`*, `criteria`* |
 | `cameo_get_simulation_status` | Whether Cameo Simulation Toolkit is installed, whether SysML v2 evaluation is available, and the SimulationConfig elements of a v1 project. | — |
 | `cameo_run_simulation` | Run a Cameo Simulation Toolkit simulation (activity, state machine, block or SimulationConfig) and return output values. Needs Simulation Toolkit; runs off the UI thread. | `targetId`*, `configId`, `inputs`, `outputs` |
@@ -196,7 +196,7 @@ SysML v2 (KerML) models in Cameo 2026x: text import/export, create, edit, connec
 | `cameo_sysml2_add_text` | Add any SysML v2 text (several elements, nested bodies, connections, states...) inside an owner. Names resolve as if the text were written in the owner. Fails without changing the model if the text has errors. | `text`*, `ownerId`, `allowErrors` |
 | `cameo_sysml2_check_text` | Parse SysML v2 text and return syntax and name-resolution diagnostics without changing the model. | `text`*, `ownerId` |
 | `cameo_sysml2_import_file` | Import a .sysml file into the project as a new root namespace. | `filePath`*, `allowErrors` |
-| `cameo_sysml2_export_text` | SysML v2 textual notation of elements (default: the whole project model), optionally written to a file. | `elementIds`, `filePath` |
+| `cameo_sysml2_export_text` | SysML v2 textual notation of elements (default: the whole project model), optionally written to a file. complete=false plus a gaps list means some constructs could not be written exactly; unnamed decision/merge/fork/join nodes get generated names. | `elementIds`, `filePath` |
 | `cameo_sysml2_set_property` | Change a SysML v2 element: name, short name, documentation, abstract, direction, types, add specializations, multiplicity, literal value or value expression. | `elementId`*, `name`, `shortName`, `documentation`, `isAbstract`, `direction`, `type`, `specializes`, `multiplicity`, `value`, `valueExpression` |
 | `cameo_sysml2_delete_element` | Delete SysML v2 elements (with their memberships). | `elementIds`* |
 | `cameo_sysml2_move_element` | Move a SysML v2 element to a new owner. | `elementId`*, `newOwnerId`* |

@@ -55,15 +55,15 @@ cameo-mcp/
 
 ### 1. Build and install
 
-The build needs only a Cameo install (it compiles against Cameo's jars, including its copy of Jackson and JUnit).
+You need Gradle 8 or later, a JDK (21 for Cameo 2026x, 17 for 2024x) and a Cameo install. Nothing is downloaded: the build compiles against Cameo's own jars, including its copies of Jackson and JUnit, so it works offline.
 
 ```bash
 # Builds build/dist/cameo-mcp-4.0.0.zip (Resource Manager) and cameo-mcp-4.0.0-manual.zip
 ./build.sh                    # or build.ps1 on Windows; asks for the Cameo install folder
-./gradlew test -PcameoHome="/path/to/Cameo"
+gradle test -PcameoHome="/path/to/Cameo"
 
 # Or copy straight into <CAMEO_HOME>/plugins/com.cameomcp.plugin/
-./gradlew deploy -PcameoHome="/path/to/Cameo"
+gradle deploy -PcameoHome="/path/to/Cameo"
 ```
 
 Install `cameo-mcp-4.0.0.zip` with **Help > Resource/Plugin Manager > Import**, or extract the manual zip into `<CAMEO_HOME>/plugins/`. Restart Cameo.
@@ -107,10 +107,10 @@ SysML v2 projects (`cameo_create_new_project kind=sysml2`) are edited through Ca
 
 - Read: `cameo_sysml2_list_roots`, `cameo_sysml2_get_tree`, `cameo_sysml2_find_elements`, `cameo_sysml2_get_element`, `cameo_sysml2_get_relationships`
 - Write: `cameo_sysml2_create_element` (any definition or usage), `cameo_sysml2_add_text`, `cameo_sysml2_set_property`, `cameo_sysml2_connect`, `cameo_sysml2_move_element`, `cameo_sysml2_delete_element`, `cameo_sysml2_import_file`
-- Check and export: `cameo_sysml2_validate`, `cameo_sysml2_export_text` (text that parses back into Cameo)
+- Check and export: `cameo_sysml2_validate`, `cameo_sysml2_export_text`. The export reports `complete: false` with a list of `gaps` for anything it cannot write exactly; unnamed decision/merge/fork/join nodes get generated names (`_decide1`) so successions can refer to them.
 - Analyse: `cameo_evaluate_parametrics` evaluates every attribute expression and constraint; with `inputs` it applies what-if values and rolls them back. `cameo_run_trade_study` ranks alternatives by weighted criteria read from their (evaluated) attributes.
 
-Adding text takes two undo steps in Cameo's history (the import, then the move into the owner).
+Adding text takes two undo steps in Cameo's history (the import, then the move into the owner); the tools say so with `undoSteps: 2`, and `cameo_undo` takes `steps`. Writes are refused while Cameo has an editing session open (for example a Specification dialog), so nothing is left half-done.
 
 ### Optional Cameo features
 
@@ -153,6 +153,11 @@ Adding text takes two undo steps in Cameo's history (the import, then the move i
 
 ## Security
 
-- The server binds to `127.0.0.1` only and rejects requests whose `Origin` is not a localhost address.
+- The server binds to `127.0.0.1` only (a non-loopback `host` in the settings file is ignored) and rejects requests whose `Origin` is not a localhost address.
+- If `~/.cameo-mcp/settings.properties` cannot be read, the server stays off rather than run without the token it may contain.
 - Set a Bearer token in the status window to require `Authorization: Bearer <token>`.
 - Macros are disabled by default (`allowMacros=false` in `~/.cameo-mcp/settings.properties`).
+
+## License
+
+MIT. See [LICENSE](LICENSE).

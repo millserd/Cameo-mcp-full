@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Configuration loader reading ~/.cameo-mcp/settings.properties.
@@ -21,6 +22,12 @@ public final class Settings {
     private String bearerToken = "";
     private boolean allowMacros = false; // scripts run arbitrary code inside Cameo: opt-in only
 
+    /** Loopback names the server may bind to. Anything else would expose every tool (and macros) to the network. */
+    static final Set<String> LOOPBACK = Set.of("127.0.0.1", "localhost", "::1", "[::1]");
+
+    /** Set when the settings file exists but could not be read; the server then refuses to start (fail closed). */
+    private String loadError;
+
     public static Settings load() {
         Settings s = new Settings();
         File propFile = getSettingsFile();
@@ -29,10 +36,19 @@ public final class Settings {
                 Properties p = new Properties();
                 p.load(fis);
                 s.port = parsePort(p.getProperty("port"), DEFAULT_PORT);
-                s.host = p.getProperty("host", "127.0.0.1");
-                s.bearerToken = p.getProperty("bearerToken", "");
-                s.allowMacros = Boolean.parseBoolean(p.getProperty("allowMacros", "false"));
-            } catch (Exception ignored) {}
+                String host = p.getProperty("host", "127.0.0.1").trim();
+                if (!LOOPBACK.contains(host.toLowerCase(java.util.Locale.ROOT))) {
+                    CameoLog.warn("Ignoring host=" + host + " in " + propFile + ": the MCP server only listens on 127.0.0.1");
+                    host = "127.0.0.1";
+                }
+                s.host = host.startsWith("[") ? host.substring(1, host.length() - 1) : host;
+                s.bearerToken = p.getProperty("bearerToken", "").trim();
+                s.allowMacros = Boolean.parseBoolean(p.getProperty("allowMacros", "false").trim());
+            } catch (Exception e) {
+                // Fail closed: a file we cannot read may hold a token the user relies on.
+                s.loadError = "Cannot read " + propFile + " (" + e.getMessage() + "). Fix or delete it, or press Apply in MCP > MCP Server Status; the MCP server stays off until then.";
+                s.allowMacros = false;
+            }
         }
         String envPort = System.getenv("CAMEO_MCP_PORT");
         if (envPort == null || envPort.isBlank()) {
@@ -61,6 +77,7 @@ public final class Settings {
             try (FileOutputStream fos = new FileOutputStream(propFile)) {
                 p.store(fos, "Cameo MCP Plugin Settings");
             }
+            loadError = null; // a freshly written file is readable again
             return true;
         } catch (Exception e) {
             CameoLog.error("Could not save " + getSettingsFile(), e);
@@ -85,6 +102,9 @@ public final class Settings {
     public static boolean isValidPort(int port) {
         return port >= 1024 && port <= 65535;
     }
+
+    /** Why the settings could not be loaded, or null. */
+    public String getLoadError() { return loadError; }
 
     public int getPort() { return port; }
     public void setPort(int port) {

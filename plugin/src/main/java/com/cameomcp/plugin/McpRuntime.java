@@ -41,7 +41,7 @@ public class McpRuntime {
 
     private final Settings settings;
     private final CallGuard callGuard;
-    private volatile Map<String, Tool> tools = Tools.all();
+    private final Map<String, Tool> tools = Tools.all();
     private HttpServer httpServer;
     private ExecutorService executor;
     private final AtomicLong totalRequests = new AtomicLong();
@@ -55,6 +55,10 @@ public class McpRuntime {
 
     public synchronized boolean start() {
         stop();
+        if (settings.getLoadError() != null) {
+            CameoLog.error(settings.getLoadError(), null);
+            return false;
+        }
         try {
             httpServer = HttpServer.create(new InetSocketAddress(settings.getHost(), settings.getPort()), 64);
             executor = Executors.newFixedThreadPool(8, r -> {
@@ -99,12 +103,6 @@ public class McpRuntime {
     public long getTotalRequests() { return totalRequests.get(); }
     public CallGuard getCallGuard() { return callGuard; }
     public Map<String, Tool> getTools() { return tools; }
-
-    /** Swaps the tool table (used to hot-load fixed tool code during development). */
-    public void setTools(Map<String, Tool> newTools) {
-        tools = newTools;
-        toolList = null;
-    }
 
     public int getActiveClientSessionCount() {
         long cutoff = System.currentTimeMillis() - SESSION_IDLE_MS;

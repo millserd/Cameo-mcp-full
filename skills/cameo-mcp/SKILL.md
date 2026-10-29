@@ -20,7 +20,8 @@ description: Read, build and analyse SysML v1, UML and SysML v2 models in Cameo 
 2. Write SysML v2 text and check it with `cameo_sysml2_check_text` (pass `ownerId` so names resolve as inside that owner).
 3. Add it with `cameo_sysml2_add_text` (fails without changes if the text has errors). For single changes: `cameo_sysml2_create_element` (kind = `part def`, `part`, `attribute`, `port`, `requirement def`, `constraint`, `state`, `action`, ...), `cameo_sysml2_set_property` (name, doc, type, specializes, multiplicity, value, valueExpression), `cameo_sysml2_connect` (connection, interface, binding, flow, succession, allocation, satisfy, dependency).
 4. Qualified names quote non-identifiers: `Model::'My Package'::Part`.
-5. Check: `cameo_sysml2_validate`, `cameo_evaluate_parametrics`, `cameo_sysml2_export_text`.
+5. Check: `cameo_sysml2_validate`, `cameo_evaluate_parametrics`, `cameo_sysml2_export_text` (if `complete` is false, read `gaps`).
+6. Text-based writes are two undo steps (`undoSteps` in the result): undo them with `cameo_undo` steps=2. Writes fail if the user has a Specification dialog open; ask them to close it.
 
 ## Analysis
 - `cameo_evaluate_parametrics`: values of attribute expressions and pass/fail of constraints. SysML v2: Cameo's evaluator, plus `inputs` for what-if (rolled back). SysML v1: Simulation Toolkit if installed.

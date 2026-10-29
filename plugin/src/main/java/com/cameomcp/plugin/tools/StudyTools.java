@@ -12,6 +12,7 @@ import com.nomagic.uml2.ext.magicdraw.mdprofiles.Stereotype;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import com.cameomcp.analysis.TradeStudy;
 
 import static com.cameomcp.plugin.tools.Tool.Mode.*;
 
@@ -48,14 +49,11 @@ final class StudyTools {
             JsonNode inputs = c.node("inputs");
             if (v2(p)) return V2Study.evaluate(p, c.str("elementId"), inputs);
             Element e = c.el("elementId");
-            java.lang.Class<?> sim = simulation();
-            if (sim != null) {
-                Map<String, Object> out = simulate(sim, e, null, c.strs("outputs"), inputs);
-                return Catalog.JSON.createObjectNode().put("engine", "Cameo Simulation Toolkit").set("outputs", Catalog.JSON.valueToTree(safe(out)));
-            }
-            // No toolkit: report the parametric model (equations and current values) without solving it.
-            ObjectNode o = Catalog.JSON.createObjectNode().put("engine", "none (Simulation Toolkit not installed)")
-                    .put("note", "Equations and current default values are listed but not solved.");
+            // SysML v1: report the parametric model (equations and current values). Solving it needs Simulation Toolkit,
+            // which blocks until done, so it runs only through cameo_run_simulation (off Cameo's UI thread).
+            ObjectNode o = Catalog.JSON.createObjectNode().put("engine", "none")
+                    .put("note", "SysML v1: equations and current default values are listed but not solved. To solve them, call "
+                            + "cameo_run_simulation" + (simulation() == null ? " (needs Cameo Simulation Toolkit, which is not installed)." : "."));
             ArrayNode vals = o.putArray("values"), cons = o.putArray("constraints");
             Model.walk(e, x -> {
                 if (x instanceof Property pr && pr.getDefaultValue() != null) {
@@ -90,37 +88,32 @@ final class StudyTools {
                 row.set("alternative", v2(p) ? V2Study.ref(p, alts.get(a)) : Model.ref(c.find(alts.get(a))));
                 rows.add(row);
             }
-            double wsum = 0;
-            for (JsonNode k : crit) wsum += k.path("weight").asDouble(1);
-            for (int a = 0; a < alts.size(); a++) {
-                double score = 0;
-                ObjectNode norm = rows.get(a).putObject("normalized");
-                ArrayNode fails = Catalog.JSON.createArrayNode();
-                for (int k = 0; k < crit.size(); k++) {
-                    JsonNode cr = crit.get(k);
-                    double lo = Double.MAX_VALUE, hi = -Double.MAX_VALUE;
-                    for (double[] r : v) { lo = Math.min(lo, r[k]); hi = Math.max(hi, r[k]); }
-                    boolean min = "min".equalsIgnoreCase(cr.path("goal").asText("max"));
-                    double n = hi == lo ? 1 : min ? (hi - v[a][k]) / (hi - lo) : (v[a][k] - lo) / (hi - lo);
-                    norm.put(cr.path("name").asText(), round(n));
-                    score += cr.path("weight").asDouble(1) * n;
-                    if (cr.has("limit")) {
-                        double lim = cr.get("limit").asDouble();
-                        if (min ? v[a][k] > lim : v[a][k] < lim) fails.add(cr.path("name").asText());
-                    }
+            List<TradeStudy.Criterion> criteria = new ArrayList<>();
+            for (JsonNode cr : crit) {
+                try {
+                    criteria.add(new TradeStudy.Criterion(cr.path("name").asText(), cr.path("weight").asDouble(1),
+                            "min".equalsIgnoreCase(cr.path("goal").asText("max")), cr.has("limit") ? cr.get("limit").asDouble() : null));
+                } catch (IllegalArgumentException ex) {
+                    throw new ToolError(ex.getMessage());
                 }
-                rows.get(a).put("score", round(score / wsum)).put("feasible", fails.isEmpty());
-                if (!fails.isEmpty()) rows.get(a).set("violatedLimits", fails);
             }
-            rows.sort((x, y) -> {
-                int f = Boolean.compare(y.path("feasible").asBoolean(), x.path("feasible").asBoolean());
-                return f != 0 ? f : Double.compare(y.path("score").asDouble(), x.path("score").asDouble());
-            });
+            List<ObjectNode> ranked = new ArrayList<>();
+            for (TradeStudy.Result r : TradeStudy.rank(v, criteria)) {
+                ObjectNode row = rows.get(r.alternative());
+                ObjectNode norm = row.putObject("normalized");
+                for (int k = 0; k < criteria.size(); k++) norm.put(criteria.get(k).name(), r.normalized()[k]);
+                row.put("score", r.score()).put("feasible", r.feasible()).put("rank", r.rank());
+                if (!r.feasible()) {
+                    ArrayNode f = row.putArray("violatedLimits");
+                    r.violatedLimits().forEach(f::add);
+                }
+                ranked.add(row);
+            }
             ObjectNode o = Catalog.JSON.createObjectNode().put("method", "weighted sum of min-max normalized criteria");
             ArrayNode ranking = o.putArray("ranking");
-            for (int i = 0; i < rows.size(); i++) ranking.add(rows.get(i).put("rank", i + 1));
+            ranked.forEach(ranking::add);
             o.set("criteria", crit);
-            o.set("recommended", rows.get(0).get("alternative"));
+            o.set("recommended", ranked.get(0).get("alternative"));
             return o;
         });
 
@@ -173,8 +166,9 @@ final class StudyTools {
     /** A numeric default value of a v1 property (including inherited), or null. */
     static Double v1Number(Element alt, String name) {
         if (!(alt instanceof Classifier cl)) return null;
-        for (NamedElement ne : cl.getInheritedMember()) if (ne instanceof Property p && name.equals(p.getName())) return num(p);
+        // Own properties first: a block that redefines an inherited value must use its own value.
         for (Property p : cl.getAttribute()) if (name.equals(p.getName())) return num(p);
+        for (NamedElement ne : cl.getInheritedMember()) if (ne instanceof Property p && name.equals(p.getName())) return num(p);
         return null;
     }
 

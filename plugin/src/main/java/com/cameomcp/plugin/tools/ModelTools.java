@@ -169,7 +169,7 @@ final class ModelTools {
                 if (stereo != null && StereotypesHelper.getStereotypes(e).stream().noneMatch(s -> stereo.equalsIgnoreCase(s.getName()))) continue;
                 if (rx != null) {
                     String n = Model.name(e);
-                    if (n == null || !(c.b("regex", false) ? rx.matcher(n).find() : rx.matcher(n).find())) continue;
+                    if (n == null || !rx.matcher(n).find()) continue;
                 }
                 if (total[0]++ < limit) a.add(Model.summary(e));
             }
@@ -284,8 +284,12 @@ final class ModelTools {
             Element e = c.el("elementId");
             String target = c.str("targetType");
             Element probe = Model.instantiate(c.project(), target);
-            Element out = Refactoring.Converting.convert(e, new ConvertElementInfo(probe.getClassType()));
-            probe.dispose();
+            Element out;
+            try {
+                out = Refactoring.Converting.convert(e, new ConvertElementInfo(probe.getClassType()));
+            } finally {
+                probe.dispose(); // only used to learn the metaclass; never added to the model
+            }
             if (out == null) throw new ToolError("Cameo cannot convert " + e.getHumanType() + " to " + target);
             return Model.summary(out);
         });
@@ -347,7 +351,14 @@ final class ModelTools {
             Project p = c.project();
             Element te = c.el("transitionId");
             if (!(te instanceof Transition t)) throw new ToolError("Not a transition: " + te.getHumanType());
-            if (c.b("replace", true)) for (Trigger old : new ArrayList<>(t.getTrigger())) ModelElementsManager.getInstance().removeElement(old);
+            if (c.b("replace", true)) {
+                for (Trigger old : new ArrayList<>(t.getTrigger())) {
+                    Event ev = old.getEvent();
+                    ModelElementsManager.getInstance().removeElement(old);
+                    // the event was created for this trigger; drop it when nothing else uses it
+                    if (ev != null && ev.get_triggerOfEvent().isEmpty() && ev.isEditable()) ModelElementsManager.getInstance().removeElement(ev);
+                }
+            }
             if (c.has("kind")) {
                 Event ev = switch (c.str("kind").toLowerCase(Locale.ROOT)) {
                     case "signal" -> {

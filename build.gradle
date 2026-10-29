@@ -77,7 +77,11 @@ project(':stdio') {
     dependencies {
         implementation project(':core')
         implementation jackson
+        testImplementation cameoLib('junit-4*.jar')
+        testImplementation cameoLib('hamcrest-core-*.jar')
     }
+    sourceSets.test.resources.srcDir rootProject.file('.')
+    sourceSets.test.resources.include 'schemas/**'
     tasks.named('compileJava') { doFirst { requireCameoHome() } }
 }
 
@@ -103,6 +107,7 @@ def pluginFiles = { CopySpec spec, String dir ->
     spec.from(project(':plugin').tasks.named('jar')) { into dir }
     spec.from(project(':stdio').tasks.named('jar')) { into dir }
     spec.from('README.md') { into dir }
+    spec.from('LICENSE') { into dir }
     spec.from('AGENTS.md') { into dir }
     spec.from('skills') { into "${dir}/skills" }
     spec.from('schemas') { into "${dir}/schemas"; stampVersion(it) }

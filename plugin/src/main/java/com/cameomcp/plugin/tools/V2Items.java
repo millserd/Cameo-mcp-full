@@ -82,7 +82,7 @@ final class V2Items {
         if (name.equals(e.getDeclaredName())) return e;
         if (depth == 0 || !(e instanceof Namespace ns)) return null;
         for (Element m : ns.getOwnedMember()) {
-            if (m instanceof Relationship) continue;
+            if (!V2.isStructural(m)) continue;
             Element f = findNamed(m, name, depth - 1);
             if (f != null) return f;
         }
@@ -117,9 +117,9 @@ final class V2Items {
         return all;
     }
 
-    static String text(Project p, String scopeId) {
-        StringBuilder sb = new StringBuilder();
-        for (Element e : V2.scope(p, scopeId)) sb.append(V2.text(e));
-        return sb.toString();
+    /** SysML text of the scope plus complete/gaps, as JSON ("text" holds the text). */
+    static ObjectNode export(Project p, String scopeId) {
+        V2.Export ex = V2.export(V2.scope(p, scopeId));
+        return Sysml2Tools.exportJson(ex).put("text", ex.text());
     }
 }
