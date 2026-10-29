@@ -774,7 +774,7 @@ final class V2 {
             if (tu.getSource() != null) h.append(" first ").append(refName(tu.getSource(), e));
             for (AcceptActionUsage a : tu.getTriggerAction()) {
                 Feature payload = a.getPayloadParameter();
-                String pt = payload == null || payload.getType().isEmpty() ? null : typeRef(payload.getType().get(0));
+                String pt = payload == null || payload.getType().isEmpty() ? null : typeRef(payload.getType().get(0), e);
                 h.append(" accept ").append(pt != null ? pt : payload != null && payload.getName() != null ? name(payload.getName()) : "");
             }
             for (Expression g : tu.getGuardExpression()) h.append(" if ").append(expr(g));
@@ -816,7 +816,7 @@ final class V2 {
             if (nm != null) h.append(h.toString().isBlank() || h.charAt(h.length() - 1) == ' ' ? "" : " ").append(nm);
             if (t instanceof Feature f) {
                 List<String> types = new ArrayList<>();
-                for (FeatureTyping ft : f.getOwnedTyping()) if (ft.getType() != null) types.add(typeRef(ft.getType()));
+                for (FeatureTyping ft : f.getOwnedTyping()) if (ft.getType() != null) types.add(typeRef(ft.getType(), e));
                 if (!types.isEmpty()) h.append(" : ").append(String.join(", ", types));
             }
             List<String> sub = new ArrayList<>(), red = new ArrayList<>();
@@ -824,12 +824,12 @@ final class V2 {
             for (Specialization s : t.getOwnedSpecialization()) {
                 if (s instanceof FeatureTyping || s instanceof ReferenceSubsetting) continue;
                 if (s.getGeneral() == null || s.isImplied()) continue;
-                if (s instanceof Redefinition rd) red.add(refName(rd.getRedefinedFeature(), e));
+                if (s instanceof Redefinition rd) red.add(rd.getRedefinedFeature() == null ? "?" : redefinedName(rd.getRedefinedFeature(), (Feature) t));
                 else if (s.getGeneral() instanceof Feature gf) {
                     // A redefinition is also a subsetting of the same feature; do not write it twice.
                     String n = refName(gf, e);
                     if (!red.contains(n)) sub.add(n);
-                } else sub.add(typeRef(s.getGeneral()));
+                } else sub.add(typeRef(s.getGeneral(), e.getOwner()));
             }
             sub.removeAll(red);
             if (!sub.isEmpty()) h.append(" :> ").append(String.join(", ", sub));
@@ -867,7 +867,7 @@ final class V2 {
 
     private static String payloadType(Type t) {
         for (Feature f : t.getOwnedFeature()) {
-            if (f instanceof PayloadFeature && !f.getType().isEmpty()) return typeRef(f.getType().get(0));
+            if (f instanceof PayloadFeature && !f.getType().isEmpty()) return typeRef(f.getType().get(0), t);
         }
         return null;
     }
@@ -974,20 +974,62 @@ final class V2 {
         if (f.getDeclaredName() == null && declared(f) != null) return declared(f);
         String n = f.getName();
         if (n == null) return featureName(f);
-        if (resolvesTo(ctx, name(n), f)) return name(n);
+        if (resolvesTo(ctx, n, f)) return name(n);
         String q = qnText(f);
         return q.isEmpty() ? name(n) : q;
     }
 
-    private static boolean resolvesTo(Element ctx, String text, Element target) {
-        Namespace ns = ctx instanceof Namespace n ? n : ctx == null ? null : ctx.getOwningNamespace();
-        if (ns == null) return false;
-        try {
-            Membership m = ns.resolve(text);
-            return m != null && m.getMemberElement() == target;
-        } catch (RuntimeException ex) {
-            return false;
+    /**
+     * True when the plain name, written at ctx, means target: the first element with that name found while walking
+     * outwards (own and inherited features of each enclosing type, members of each enclosing namespace) is target.
+     */
+    /**
+     * Would the simple name, written at ctx, resolve to target? Walks the enclosing namespaces outward, using each one's
+     * memberships (owned, inherited and imported); the first namespace that has the name decides (Cameo's own
+     * Namespace.resolve* operations are not implemented in 2026x).
+     */
+    private static boolean resolvesTo(Element ctx, String simple, Element target) {
+        for (Element cur = ctx; cur != null; cur = cur.getOwner()) {
+            if (!(cur instanceof Namespace ns) || cur instanceof Membership) continue;
+            try {
+                for (Membership m : ns.getMembership()) {
+                    if (simple.equals(m.getMemberName()) || simple.equals(m.getMemberShortName())) return m.getMemberElement() == target;
+                }
+            } catch (RuntimeException ex) {
+                return false;
+            }
         }
+        return false;
+    }
+
+    /** A redefined feature is named as seen through the redefining feature's owner's inherited memberships. */
+    private static String redefinedName(Feature target, Feature redefining) {
+        Type owner = redefining.getOwningType();
+        String n = target.getName();
+        if (owner != null && n != null && target.getChainingFeature().isEmpty()) {
+            try {
+                // The redefined feature comes from one of the owner's supertypes.
+                for (Specialization sp : owner.getOwnedSpecialization()) {
+                    if (!(sp.getGeneral() instanceof Type g)) continue;
+                    for (Membership m : g.getMembership()) {
+                        if (n.equals(m.getMemberName())) {
+                            if (m.getMemberElement() == target) return name(n);
+                            break;
+                        }
+                    }
+                }
+            } catch (RuntimeException ignored) {
+                // fall back to the qualified name
+            }
+        }
+        return refName(target, owner != null ? owner : redefining);
+    }
+
+    /** A type as written at ctx: its plain name when that resolves there, else the qualified name. */
+    private static String typeRef(Type t, Element ctx) {
+        String n = t.getDeclaredName();
+        if (n != null && !(t instanceof ConjugatedPortDefinition) && resolvesTo(ctx, n, t)) return name(n);
+        return typeRef(t);
     }
 
     private static String typeRef(Type t) {
