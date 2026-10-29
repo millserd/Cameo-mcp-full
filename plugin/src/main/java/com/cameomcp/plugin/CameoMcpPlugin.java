@@ -18,13 +18,11 @@ import com.nomagic.magicdraw.plugins.Plugin;
  */
 public class CameoMcpPlugin extends Plugin {
 
-    private static CameoMcpPlugin instance;
     private Settings settings;
     private McpRuntime runtime;
 
     @Override
     public void init() {
-        instance = this;
         this.settings = Settings.load();
         Resources.syncToUserHome();
         this.runtime = new McpRuntime(this.settings);
@@ -44,8 +42,6 @@ public class CameoMcpPlugin extends Plugin {
             @Override
             public void projectOpened(Project project) {
                 CameoLog.info("Project opened: " + project.getName());
-                runtime.recordModelEvent("PROJECT_OPENED", project.getName(),
-                        project.getPrimaryModel() != null ? project.getPrimaryModel().getID() : "");
             }
 
             @Override
@@ -71,10 +67,6 @@ public class CameoMcpPlugin extends Plugin {
     @Override
     public boolean isSupported() {
         return true;
-    }
-
-    public static CameoMcpPlugin getInstance() {
-        return instance;
     }
 
     public Settings getSettings() {

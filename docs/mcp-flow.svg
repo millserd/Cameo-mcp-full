@@ -30,7 +30,7 @@
 <rect class="card" x="400" y="140" width="340" height="96" rx="10"/>
 <text class="t" x="416" y="166">Embedded HTTP server</text>
 <text class="s" x="416" y="188">127.0.0.1:18740  ·  POST /mcp</text>
-<text class="s" x="416" y="207">GET /status · /health · /capabilities</text>
+<text class="s" x="416" y="207">GET /status · /health</text>
 <rect class="card guard" x="400" y="276" width="340" height="96" rx="10"/>
 <text class="t" x="416" y="302">CallGuard</text>
 <text class="s" x="416" y="324">Origin check  →  403</text>
@@ -49,31 +49,31 @@
 <text class="s" x="816" y="188">server info, protocol handshake</text>
 <rect class="card" x="800" y="236" width="340" height="76" rx="10"/>
 <text class="t" x="816" y="262">tools/list</text>
-<text class="s" x="816" y="284">Catalog: 365 tools in 7 families</text>
+<text class="s" x="816" y="284">Catalog: 134 tools in 8 families</text>
 <rect class="card" x="800" y="332" width="340" height="76" rx="10"/>
 <text class="t" x="816" y="358">prompts · resources</text>
-<text class="s" x="816" y="380">4 MBSE prompts · guide · SKILL.md</text>
+<text class="s" x="816" y="380">6 MBSE prompts · guide · tool list</text>
 <rect class="card hl" x="800" y="428" width="340" height="96" rx="10"/>
 <text class="t" x="816" y="454">tools/call</text>
 <text class="s" x="816" y="476">parse tool name + arguments</text>
-<text class="s" x="816" y="495">executeTool(…)</text>
+<text class="s" x="816" y="495">Tools.execute(…)</text>
 <path class="a" d="M740 460 L770 460 L770 178 L792 178" marker-end="url(#m)"/>
 <path class="a" d="M740 460 L770 460 L770 274 L792 274" marker-end="url(#m)"/>
 <path class="a" d="M740 460 L770 460 L770 370 L792 370" marker-end="url(#m)"/>
 <path class="a" d="M740 476 L792 476" marker-end="url(#m)"/>
-<text class="sl" x="400" y="584">MODEL WRITE PATH</text>
-<rect class="card guard" x="400" y="600" width="220" height="96" rx="10"/>
-<text class="t" x="416" y="626">Write lock</text>
-<text class="s" x="416" y="648">CallGuard serializes</text>
-<text class="s" x="416" y="667">one writer at a time</text>
+<text class="sl" x="400" y="584">TOOL EXECUTION</text>
+<rect class="card" x="400" y="600" width="220" height="96" rx="10"/>
+<text class="t" x="416" y="626">Tool mode</text>
+<text class="s" x="416" y="648">READ · WRITE · APP</text>
+<text class="s" x="416" y="667">timeout per call</text>
 <rect class="card" x="660" y="600" width="220" height="96" rx="10"/>
 <text class="t" x="676" y="626">Swing EDT</text>
 <text class="s" x="676" y="648">SessionManager session</text>
 <text class="s" x="676" y="667">create → edit → close</text>
 <rect class="card hl" x="920" y="600" width="220" height="96" rx="10"/>
 <text class="t" x="936" y="626">Cameo model</text>
-<text class="s" x="936" y="648">OpenAPI · project</text>
-<text class="s" x="936" y="667">diagrams · elements</text>
+<text class="s" x="936" y="648">UML / SysML v1 API</text>
+<text class="s" x="936" y="667">SysML v2 (KerML) API</text>
 <path class="a" d="M970 524 L970 552 L600 552 L600 592" marker-end="url(#m)"/>
 <path class="a" d="M620 648 L652 648" marker-end="url(#m)"/>
 <path class="a" d="M880 648 L912 648" marker-end="url(#m)"/>

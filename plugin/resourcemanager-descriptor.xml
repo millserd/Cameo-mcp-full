@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <resourceDescriptor critical="false" date="2026-10-26"
-    description="Cameo MCP Server &amp; AI Skill Bundle (365 Tools for Cameo 2024x &amp; 2026x)"
+    description="Cameo MCP server: lets AI agents read and edit models in Cameo 2024x &amp; 2026x"
     group="MCP Resource" homePage="https://github.com/millserd/Cameo-mcp-full"
     id="3001" mdVersionMax="higher" mdVersionMin="19.0"
     name="Cameo MCP" product="Cameo MCP" restartMagicdraw="true" type="Plugin">
-    <version human="3.1.0" internal="3010" resource="30100"/>
+    <version human="@VERSION@" internal="@VERSION_INTERNAL@" resource="@VERSION_RESOURCE@"/>
     <provider email="" homePage="https://github.com/millserd/Cameo-mcp-full" name="Cameo MCP"/>
     <edition>Reader</edition>
     <edition>Community</edition>
@@ -27,6 +27,8 @@
               to="plugins/com.cameomcp.plugin/cameo-mcp-plugin.jar"/>
         <file from="plugins/com.cameomcp.plugin/cameo-mcp-stdio.jar"
               to="plugins/com.cameomcp.plugin/cameo-mcp-stdio.jar"/>
+        <file from="plugins/com.cameomcp.plugin/LICENSE"
+              to="plugins/com.cameomcp.plugin/LICENSE"/>
         <file from="plugins/com.cameomcp.plugin/README.md"
               to="plugins/com.cameomcp.plugin/README.md"/>
         <file from="plugins/com.cameomcp.plugin/AGENTS.md"

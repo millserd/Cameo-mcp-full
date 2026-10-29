@@ -4,16 +4,18 @@ plugins {
 
 allprojects {
     group = 'com.cameomcp'
-    version = '3.1.0'
+    // The only place the version is written; plugin.xml, the Resource Manager descriptor and the manifest get it at build time.
+    version = '4.0.0'
 
-    repositories {
-        mavenCentral()
-    }
 }
 
 def cameoHome = findProperty('cameoHome') ?: System.getenv('CAMEO_HOME')
 // shortcut: 2026x jars are Java 21 class files, 2024x are Java 17; detected by core jar name, revisit for 2027x
 def is2026 = cameoHome && (file("${cameoHome}/lib").list()?.any { it.startsWith('core-2026') } ?: false)
+// Everything comes from the Cameo install, so the build needs no network: Jackson (also used by the plugin
+// at runtime from Cameo's own copy) and JUnit 4 for tests.
+def cameoLib = { String pattern -> cameoHome ? fileTree(dir: "${cameoHome}/lib", include: pattern) : files() }
+def jackson = cameoLib('jackson-*.jar')
 
 subprojects {
     apply plugin: 'java'
@@ -22,84 +24,116 @@ subprojects {
             languageVersion = JavaLanguageVersion.of(is2026 ? 21 : 17)
         }
     }
+    tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 }
+
 def requireCameoHome = {
     if (!cameoHome || !file("${cameoHome}/lib").isDirectory()) {
         throw new GradleException("Cameo install dir not set or invalid ('${cameoHome}'). Run build.ps1 / build.sh, or pass -PcameoHome=<Cameo install dir>.")
     }
 }
 
-// Manual-install archive: extract into <CAMEO_HOME>/plugins/. NOT for Resource Manager (no descriptor).
-tasks.register('dist', Zip) {
-    dependsOn ':plugin:jar', ':stdio:jar'
-    archiveFileName = "cameo-mcp-${version}-manual.zip"
-    destinationDirectory = file("${buildDir}/dist")
-    from(project(':plugin').file('plugin.xml')) { into 'com.cameomcp.plugin' }
-    from(project(':plugin').tasks.named('jar')) { into 'com.cameomcp.plugin' }
-    from(project(':stdio').tasks.named('jar')) { into 'com.cameomcp.plugin' }
-    from('README.md') { into 'com.cameomcp.plugin' }
-    from('AGENTS.md') { into 'com.cameomcp.plugin' }
-    from('skills') { into 'com.cameomcp.plugin/skills' }
-    from('schemas') { into 'com.cameomcp.plugin/schemas' }
-}
-
-tasks.register('deploy', Copy) {
-    dependsOn ':plugin:jar', ':stdio:jar'
-    from(project(':plugin').file('plugin.xml'))
-    from(project(':plugin').tasks.named('jar'))
-    from(project(':stdio').tasks.named('jar'))
-    from('README.md')
-    from('AGENTS.md')
-    from('skills') { into 'skills' }
-    from('schemas') { into 'schemas' }
-    into { "${cameoHome}/plugins/com.cameomcp.plugin" }
-    doFirst { requireCameoHome() }
-}
-
-
-tasks.register('rdzip', Zip) {
-    description = 'Packages the Cameo Resource Manager installable archive (Help > Resource/Plugin Manager > Import) with descriptor, plugin JARs, and AI SKILL.md'
-    dependsOn ':plugin:jar', ':stdio:jar'
-    // Must be .zip: Resource Manager's Import dialog only accepts .zip files
-    archiveFileName = "cameo-mcp-${version}.zip"
-    destinationDirectory = file("${buildDir}/dist")
-
-    from(project(':plugin').file('resourcemanager-descriptor.xml')) {
-        into 'data/resourcemanager'
-        rename { 'MDR_Plugin_CameoMcp_3001_descriptor.xml' }
+def stampVersion = { CopySpec spec ->
+    spec.filesMatching(['**/plugin.xml', '**/*descriptor.xml', '**/mcp-tools-manifest.json']) {
+        // Resource Manager compares these integers to decide upgrades: keep them above 3.1.0's (3010 / 30100).
+        def (maj, min, pat) = project.version.toString().tokenize('.').collect { it as int }
+        filter { String line -> line.replace('@VERSION@', project.version.toString())
+                .replace('@VERSION_INTERNAL@', String.valueOf(maj * 1000 + min * 10 + pat))
+                .replace('@VERSION_RESOURCE@', String.valueOf(maj * 10000 + min * 100 + pat * 10)) }
     }
-    from(project(':plugin').file('plugin.xml')) { into 'plugins/com.cameomcp.plugin' }
-    from(project(':plugin').tasks.named('jar')) { into 'plugins/com.cameomcp.plugin' }
-    from(project(':stdio').tasks.named('jar'))  { into 'plugins/com.cameomcp.plugin' }
-    from('README.md')                           { into 'plugins/com.cameomcp.plugin' }
-    from('AGENTS.md')                           { into 'plugins/com.cameomcp.plugin' }
-    from('skills')                              { into 'plugins/com.cameomcp.plugin/skills' }
-    from('schemas')                             { into 'plugins/com.cameomcp.plugin/schemas' }
+}
+
+project(':core') {
+    dependencies {
+        compileOnly jackson
+        testImplementation jackson
+        testImplementation cameoLib('junit-4*.jar')
+        testImplementation cameoLib('hamcrest-core-*.jar')
+    }
+    tasks.named('compileJava') { doFirst { requireCameoHome() } }
+    // Tests read the real manifest from the classpath.
+    sourceSets.test.resources.srcDir rootProject.file('.')
+    sourceSets.test.resources.include 'schemas/**'
 }
 
 project(':plugin') {
     dependencies {
         implementation project(':core')
-        // Cameo API jars come from the local install; set -PcameoHome or CAMEO_HOME
-        if (cameoHome) compileOnly fileTree(dir: "${cameoHome}/lib", include: '**/*.jar')
+        // Cameo API (and Jackson) come from the local install at compile time and from Cameo at runtime.
+        if (cameoHome) {
+            def cameoJars = files(fileTree(dir: "${cameoHome}/lib", include: '**/*.jar'),
+                    fileTree(dir: "${cameoHome}/plugins", include: '**/*.jar', exclude: 'com.cameomcp.plugin/**'))
+            compileOnly cameoJars
+            testImplementation cameoJars
+        }
     }
     tasks.named('compileJava') { doFirst { requireCameoHome() } }
+    tasks.named('test') { systemProperty 'java.awt.headless', 'true' }
+    sourceSets.test.resources.srcDir rootProject.file('.')
+    sourceSets.test.resources.include 'schemas/**', 'skills/**'
 }
 
 project(':stdio') {
     dependencies {
         implementation project(':core')
+        implementation jackson
+        testImplementation cameoLib('junit-4*.jar')
+        testImplementation cameoLib('hamcrest-core-*.jar')
     }
+    sourceSets.test.resources.srcDir rootProject.file('.')
+    sourceSets.test.resources.include 'schemas/**'
+    tasks.named('compileJava') { doFirst { requireCameoHome() } }
 }
 
-// Self-contained jars: names match plugin.xml / docs, core classes and schemas/skills resources bundled in.
+// Self-contained jars: core classes, manifest and skill bundled in; the stdio jar also bundles Jackson.
 configure([project(':plugin'), project(':stdio')]) { p ->
     tasks.named('jar') {
         archiveFileName = p.name == 'plugin' ? 'cameo-mcp-plugin.jar' : 'cameo-mcp-stdio.jar'
         dependsOn ':core:jar'
         from { project(':core').sourceSets.main.output }
-        from(rootProject.file('schemas')) { into 'schemas' }
+        from(rootProject.file('schemas')) { into 'schemas'; stampVersion(it) }
         from(rootProject.file('skills')) { into 'skills' }
-        if (p.name == 'stdio') manifest { attributes 'Main-Class': 'com.cameomcp.stdio.StdioLauncher' }
+        if (p.name == 'stdio') {
+            manifest { attributes 'Main-Class': 'com.cameomcp.stdio.StdioLauncher' }
+            from { configurations.runtimeClasspath.findAll { it.name.startsWith('jackson') }.collect { zipTree(it) } }
+            exclude 'META-INF/*.SF', 'META-INF/*.RSA', 'META-INF/*.DSA', 'module-info.class', 'META-INF/versions/**'
+            duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        }
     }
+}
+
+def pluginFiles = { CopySpec spec, String dir ->
+    spec.from(project(':plugin').file('plugin.xml')) { into dir; stampVersion(it) }
+    spec.from(project(':plugin').tasks.named('jar')) { into dir }
+    spec.from(project(':stdio').tasks.named('jar')) { into dir }
+    spec.from('README.md') { into dir }
+    spec.from('LICENSE') { into dir }
+    spec.from('AGENTS.md') { into dir }
+    spec.from('skills') { into "${dir}/skills" }
+    spec.from('schemas') { into "${dir}/schemas"; stampVersion(it) }
+}
+
+// Manual-install archive: extract into <CAMEO_HOME>/plugins/. NOT for Resource Manager (no descriptor).
+tasks.register('dist', Zip) {
+    archiveFileName = "cameo-mcp-${version}-manual.zip"
+    destinationDirectory = file("${buildDir}/dist")
+    pluginFiles(it, 'com.cameomcp.plugin')
+}
+
+// Resource Manager package (Help > Resource/Plugin Manager > Import). Must be .zip: the Import dialog only accepts .zip.
+tasks.register('rdzip', Zip) {
+    archiveFileName = "cameo-mcp-${version}.zip"
+    destinationDirectory = file("${buildDir}/dist")
+    from(project(':plugin').file('resourcemanager-descriptor.xml')) {
+        into 'data/resourcemanager'
+        rename { 'MDR_Plugin_CameoMcp_3001_descriptor.xml' }
+        stampVersion(it)
+    }
+    pluginFiles(it, 'plugins/com.cameomcp.plugin')
+}
+
+tasks.register('deploy', Copy) {
+    into { "${cameoHome}/plugins/com.cameomcp.plugin" }
+    pluginFiles(it, '.')
+    doFirst { requireCameoHome() }
 }

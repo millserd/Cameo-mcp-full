@@ -3,7 +3,7 @@
 <plugin
     id="com.cameomcp.plugin"
     name="Cameo MCP"
-    version="3.1.0"
+    version="@VERSION@"
     provider-name="Cameo MCP"
     class="com.cameomcp.plugin.CameoMcpPlugin">
     <requires>
