@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 860" width="1200" height="860" font-family="Inter, Segoe UI, Helvetica, Arial, sans-serif">
+<defs><marker id="m" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#475569"/></marker></defs>
+<style>
+.bg{fill:#ffffff} .h{font-size:26px;font-weight:700;fill:#0f172a} .sub{font-size:14px;fill:#475569}
+.sec{fill:#f8fafc;stroke:#cbd5e1;stroke-dasharray:6 5} .sl{font-size:12px;font-weight:700;letter-spacing:1.5px;fill:#64748b}
+.card{fill:#ffffff;stroke:#94a3b8;stroke-width:1.5} .hl{fill:#eef2ff;stroke:#4f46e5;stroke-width:2}
+.guard{fill:#fff7ed;stroke:#ea580c;stroke-width:1.5} .log{fill:#f0fdf4;stroke:#16a34a;stroke-width:1.5}
+.t{font-size:16px;font-weight:700;fill:#0f172a} .s{font-size:13px;fill:#334155} .tag{font-size:11px;fill:#64748b}
+.a{fill:none;stroke:#475569;stroke-width:1.8} .ret{stroke:#4f46e5;stroke-dasharray:7 5}
+.al{font-size:12px;fill:#334155;paint-order:stroke;stroke:#ffffff;stroke-width:4px}
+</style>
+<rect class="bg" width="1200" height="860"/>
+<text class="h" x="40" y="48">Cameo MCP — request flow</text>
+<text class="sub" x="40" y="72">One JSON-RPC 2.0 call, from an AI client to the Cameo model and back</text>
+<rect class="sec" x="30" y="100" width="300" height="500" rx="14"/>
+<text class="sl" x="46" y="124">CLIENT SIDE</text>
+<rect class="card hl" x="50" y="140" width="260" height="96" rx="10"/>
+<text class="t" x="66" y="166">MCP client</text>
+<text class="s" x="66" y="188">Agent, IDE or desktop app</text>
+<text class="s" x="66" y="207">speaks MCP JSON-RPC 2.0</text>
+<rect class="card" x="50" y="330" width="260" height="116" rx="10"/>
+<text class="t" x="66" y="356">StdioLauncher</text>
+<text class="s" x="66" y="378">cameo-mcp-stdio.jar</text>
+<text class="s" x="66" y="397">stdin/stdout ⇄ HTTP proxy</text>
+<text class="s" x="66" y="416">--diagnose · --list · --call</text>
+<path class="a" d="M180 236 L180 322" marker-end="url(#m)"/>
+<text class="al" x="192" y="284" text-anchor="start">stdio transport</text>
+<rect class="sec" x="370" y="100" width="800" height="740" rx="14"/>
+<text class="sl" x="386" y="124">INSIDE CAMEO  ·  com.cameomcp.plugin</text>
+<rect class="card" x="400" y="140" width="340" height="96" rx="10"/>
+<text class="t" x="416" y="166">Embedded HTTP server</text>
+<text class="s" x="416" y="188">127.0.0.1:18740  ·  POST /mcp</text>
+<text class="s" x="416" y="207">GET /status · /health · /capabilities</text>
+<rect class="card guard" x="400" y="276" width="340" height="96" rx="10"/>
+<text class="t" x="416" y="302">CallGuard</text>
+<text class="s" x="416" y="324">Origin check  →  403</text>
+<text class="s" x="416" y="343">Bearer token  →  401</text>
+<rect class="card" x="400" y="412" width="340" height="96" rx="10"/>
+<text class="t" x="416" y="438">Session + dispatcher</text>
+<text class="s" x="416" y="460">Mcp-Session-Id assigned/reused</text>
+<text class="s" x="416" y="479">route on JSON-RPC method</text>
+<path class="a" d="M310 180 L392 180" marker-end="url(#m)"/>
+<text class="al" x="351" y="170" text-anchor="middle">HTTP (direct)</text>
+<path class="a" d="M310 400 L356 400 L356 200 L392 200" marker-end="url(#m)"/>
+<path class="a" d="M570 236 L570 268" marker-end="url(#m)"/>
+<path class="a" d="M570 372 L570 404" marker-end="url(#m)"/>
+<rect class="card" x="800" y="140" width="340" height="76" rx="10"/>
+<text class="t" x="816" y="166">initialize · ping</text>
+<text class="s" x="816" y="188">server info, protocol handshake</text>
+<rect class="card" x="800" y="236" width="340" height="76" rx="10"/>
+<text class="t" x="816" y="262">tools/list</text>
+<text class="s" x="816" y="284">Catalog: 365 tools in 7 families</text>
+<rect class="card" x="800" y="332" width="340" height="76" rx="10"/>
+<text class="t" x="816" y="358">prompts · resources</text>
+<text class="s" x="816" y="380">4 MBSE prompts · guide · SKILL.md</text>
+<rect class="card hl" x="800" y="428" width="340" height="96" rx="10"/>
+<text class="t" x="816" y="454">tools/call</text>
+<text class="s" x="816" y="476">parse tool name + arguments</text>
+<text class="s" x="816" y="495">executeTool(…)</text>
+<path class="a" d="M740 460 L770 460 L770 178 L792 178" marker-end="url(#m)"/>
+<path class="a" d="M740 460 L770 460 L770 274 L792 274" marker-end="url(#m)"/>
+<path class="a" d="M740 460 L770 460 L770 370 L792 370" marker-end="url(#m)"/>
+<path class="a" d="M740 476 L792 476" marker-end="url(#m)"/>
+<text class="sl" x="400" y="584">MODEL WRITE PATH</text>
+<rect class="card guard" x="400" y="600" width="220" height="96" rx="10"/>
+<text class="t" x="416" y="626">Write lock</text>
+<text class="s" x="416" y="648">CallGuard serializes</text>
+<text class="s" x="416" y="667">one writer at a time</text>
+<rect class="card" x="660" y="600" width="220" height="96" rx="10"/>
+<text class="t" x="676" y="626">Swing EDT</text>
+<text class="s" x="676" y="648">SessionManager session</text>
+<text class="s" x="676" y="667">create → edit → close</text>
+<rect class="card hl" x="920" y="600" width="220" height="96" rx="10"/>
+<text class="t" x="936" y="626">Cameo model</text>
+<text class="s" x="936" y="648">OpenAPI · project</text>
+<text class="s" x="936" y="667">diagrams · elements</text>
+<path class="a" d="M970 524 L970 552 L600 552 L600 592" marker-end="url(#m)"/>
+<path class="a" d="M620 648 L652 648" marker-end="url(#m)"/>
+<path class="a" d="M880 648 L912 648" marker-end="url(#m)"/>
+<rect class="card log" x="400" y="730" width="740" height="86" rx="10"/>
+<text class="t" x="416" y="756">CameoLog</text>
+<text class="s" x="416" y="778">every step → Notification window · ~/.cameo-mcp/cameo-mcp.log · MCP Status window</text>
+<path class="a ret" d="M1030 696 L1030 712 L1186 712 L1186 92 L180 92 L180 132" marker-end="url(#m)"/>
+<text class="al" x="670" y="86" text-anchor="middle">JSON-RPC result  (Mcp-Session-Id header)</text>
+</svg>

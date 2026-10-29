@@ -4,6 +4,10 @@ A **single-package, zero-Python, 100% Java** Model Context Protocol (MCP) server
 
 This unified edition aligns the architecture, package structure (`com.cameomcp.*`), plugin descriptor (`com.cameomcp.plugin`), in-app **MCP** menu (`McpMenuConfigurator`), **MCP Server Status** window (`McpStatusWindow`), `CameoLog`, `Settings`, `CallGuard`, `StdioLauncher`, and 7-family `Catalog` (183 tools) from [`millserd/Cameo-mcp`](https://github.com/millserd/Cameo-mcp) with 100% of the 162 tools from [`ajhcs/cameo-mcp-bridge`](https://github.com/ajhcs/cameo-mcp-bridge) plus **60 retroactively discovered Cameo 2024x/2026x OpenAPI tools**—yielding **365 total MCP tools** across 7 catalog classes.
 
+## How It Works
+
+![Cameo MCP request flow: an MCP client connects over stdio (via StdioLauncher) or HTTP to the plugin's embedded server on 127.0.0.1:18740; CallGuard checks Origin and Bearer token; the dispatcher routes JSON-RPC methods; tools/call writes go through the write lock, the Swing EDT and a SessionManager session into the Cameo model; CameoLog records every step and the result returns to the client.](docs/mcp-flow.svg)
+
 ## Architectural Alignment Summary
 
 | Feature / Surface | [`ajhcs/cameo-mcp-bridge`](https://github.com/ajhcs/cameo-mcp-bridge) | [`millserd/Cameo-mcp`](https://github.com/millserd/Cameo-mcp) | Unified `cameo-mcp` (v3.1.0) |
