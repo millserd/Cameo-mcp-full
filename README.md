@@ -107,7 +107,7 @@ SysML v2 projects (`cameo_create_new_project kind=sysml2`) are edited through Ca
 
 - Read: `cameo_sysml2_list_roots`, `cameo_sysml2_get_tree`, `cameo_sysml2_find_elements`, `cameo_sysml2_get_element`, `cameo_sysml2_get_relationships`
 - Write: `cameo_sysml2_create_element` (any definition or usage), `cameo_sysml2_add_text`, `cameo_sysml2_set_property`, `cameo_sysml2_connect`, `cameo_sysml2_move_element`, `cameo_sysml2_delete_element`, `cameo_sysml2_import_file`
-- Check and export: `cameo_sysml2_validate`, `cameo_sysml2_export_text`. The export reports `complete: false` with a list of `gaps` for anything it cannot write exactly; unnamed decision/merge/fork/join nodes get generated names (`_decide1`) so successions can refer to them.
+- Check and export: `cameo_sysml2_validate`, `cameo_sysml2_export_text`. The export writes plain names where they resolve in context, and qualified names only where needed. It reports `complete: false` with a list of `gaps` for anything it cannot write exactly; unnamed decision/merge/fork/join nodes get generated names (`_decide1`) so successions can refer to them.
 - Analyse: `cameo_evaluate_parametrics` evaluates every attribute expression and constraint; with `inputs` it applies what-if values and rolls them back. `cameo_run_trade_study` ranks alternatives by weighted criteria read from their (evaluated) attributes.
 
 Adding text takes two undo steps in Cameo's history (the import, then the move into the owner); the tools say so with `undoSteps: 2`, and `cameo_undo` takes `steps`. Writes are refused while Cameo has an editing session open (for example a Specification dialog), so nothing is left half-done.

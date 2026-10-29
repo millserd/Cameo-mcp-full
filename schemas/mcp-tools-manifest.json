@@ -2364,7 +2364,7 @@
     {
       "name": "cameo_attach_file",
       "family": "artifacts",
-      "description": "Embed a file in the model as an «AttachedFile» comment under an owner.",
+      "description": "Embed a file in the model as an \u00abAttachedFile\u00bb comment under an owner.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2396,7 +2396,7 @@
         "properties": {
           "attachedFileId": {
             "type": "string",
-            "description": "«AttachedFile» element id"
+            "description": "\u00abAttachedFile\u00bb element id"
           },
           "directory": {
             "type": "string",
@@ -2526,7 +2526,7 @@
     {
       "name": "cameo_list_validation_suites",
       "family": "advanced",
-      "description": "Validation suites available in the project (packages with «validationSuite») and their rule counts.",
+      "description": "Validation suites available in the project (packages with \u00abvalidationSuite\u00bb) and their rule counts.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3734,7 +3734,7 @@
     {
       "name": "cameo_sysml2_export_text",
       "family": "sysml2",
-      "description": "SysML v2 textual notation of elements (default: the whole project model), optionally written to a file. complete=false plus a gaps list means some constructs could not be written exactly; unnamed decision/merge/fork/join nodes get generated names.",
+      "description": "SysML v2 textual notation of elements (default: the whole project model), optionally written to a file. Names are written as plain names where they resolve in context, qualified only where needed. complete=false plus a gaps list means some constructs could not be written exactly; unnamed decision/merge/fork/join nodes get generated names.",
       "inputSchema": {
         "type": "object",
         "properties": {
