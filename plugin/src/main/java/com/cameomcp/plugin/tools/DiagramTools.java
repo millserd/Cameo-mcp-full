@@ -80,7 +80,7 @@ final class DiagramTools {
         Tools.add(m, "cameo_create_diagram", WRITE, c -> {
             Project p = c.project();
             String type = diagramType(c.str("type"));
-            Element owner = c.has("ownerId") ? c.el("ownerId") : p.getPrimaryModel();
+            Element owner = c.has("ownerId") ? c.el("ownerId") : c.model();
             if (!(owner instanceof Namespace ns)) throw new ToolError("A diagram owner must be a namespace (package, block, activity...), not " + owner.getHumanType());
             Diagram d = ModelElementsManager.getInstance().createDiagram(type, ns);
             if (d == null) throw new ToolError("Cameo could not create a '" + type + "' here (see cameo_list_diagram_types)");
@@ -446,7 +446,7 @@ final class DiagramTools {
         return hit[0];
     }
 
-    private static PresentationElement shapeOf(DiagramPresentationElement d, Element e) {
+    static PresentationElement shapeOf(DiagramPresentationElement d, Element e) {
         PresentationElement[] hit = {null};
         forEachPe(d, pe -> { if (hit[0] == null && pe instanceof ShapeElement && pe.getElement() == e) hit[0] = pe; });
         if (hit[0] == null) throw new ToolError("'" + Model.name(e) + "' is not shown on this diagram; add it first or pass the presentation ids");

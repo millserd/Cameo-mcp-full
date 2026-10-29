@@ -43,10 +43,11 @@ final class ServerTools {
             ObjectNode proj = o.putObject("project").put("open", p != null);
             if (p != null) {
                 proj.put("name", p.getName()).put("dirty", p.isDirty()).put("remote", p.isRemote())
-                        .put("primaryModelId", p.getPrimaryModel().getID())
+                        .put("kind", p.getPrimaryModel() == null ? "sysml2" : "uml")
                         .put("editingSessionOpen", SessionManager.getInstance().isSessionCreated(p));
             }
             o.put("openProjects", Application.getInstance().getProjectsManager().getProjects().size());
+            o.put("sysml2Support", Tools.v2Available).put("communityMode", ModelTools.communityMode());
             return o;
         });
 

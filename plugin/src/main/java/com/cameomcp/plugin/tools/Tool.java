@@ -4,10 +4,11 @@ package com.cameomcp.plugin.tools;
  * One MCP tool. READ runs on the Swing thread with no editing session; WRITE runs inside one
  * SessionManager session (one undoable step); APP runs on the Swing thread outside any session
  * (project open/save/close, undo/redo, UI actions — Cameo refuses these inside a session).
+ * BACKGROUND runs on its own thread, for blocking calls such as simulation.
  */
 public record Tool(String name, Mode mode, Handler handler) {
 
-    public enum Mode { READ, WRITE, APP }
+    public enum Mode { READ, WRITE, APP, BACKGROUND }
 
     @FunctionalInterface
     public interface Handler {

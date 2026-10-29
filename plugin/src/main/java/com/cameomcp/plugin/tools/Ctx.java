@@ -27,6 +27,14 @@ public final class Ctx {
 
     public Project projectOrNull() { return project; }
 
+    /** The UML primary model; SysML v2 projects have none. */
+    public com.nomagic.uml2.ext.magicdraw.classes.mdkernel.Package model() {
+        var m = project().getPrimaryModel();
+        if (m == null) throw new ToolError("This is a SysML v2 project, which has no UML model. Use the cameo_sysml2_* tools "
+                + "(and cameo_evaluate_parametrics, cameo_run_trade_study, cameo_proof_model_text...) for it.");
+        return m;
+    }
+
     public boolean has(String key) {
         JsonNode n = args.get(key);
         return n != null && !n.isNull();
@@ -82,6 +90,7 @@ public final class Ctx {
         Project p = project();
         BaseElement b = p.getElementByID(ref);
         if (b instanceof Element e) return e;
+        if (b != null) throw new ToolError("'" + ref + "' is a SysML v2 element; this tool works on UML/SysML v1 models. Use the cameo_sysml2_* tools.");
         if (ref.contains("::")) {
             Element e = Finder.byQualifiedName().find(p, ref);
             if (e != null) return e;

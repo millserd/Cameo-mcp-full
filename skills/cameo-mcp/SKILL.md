@@ -1,27 +1,33 @@
 ---
 name: cameo-mcp
-description: Connect to and command Cameo Systems Modeler / CATIA Magic (2024x and 2026x) via the 365-tool Java Cameo MCP Server (com.cameomcp.plugin) across server, model, diagrams, artifacts, advanced, analysis, and sysml2 families.
+description: Read, build and analyse SysML v1, UML and SysML v2 models in Cameo Systems Modeler / CATIA Magic (2024x and 2026x) through the Cameo MCP server (134 tools in server, model, diagrams, artifacts, advanced, analysis, methodology and sysml2 families).
 ---
-# Cameo MCP Skill (`skills/cameo-mcp/SKILL.md`)
+# Cameo MCP
 
-## 1. Endpoint & Handshake
-- **Default HTTP MCP Endpoint**: `http://127.0.0.1:18740/mcp` (check **MCP > MCP Server Status...** in Cameo if modified).
-- **Stdio Bridge**: `java -jar <CAMEO_HOME>/plugins/com.cameomcp.plugin/cameo-mcp-stdio.jar --port 18740`
-- **First Call**: Always invoke `cameo_status` and `cameo_get_project` first. Use `cameo_log` to publish milestone updates to Cameo's Notification window so the user can follow your progress in real time.
+## Start
+- Endpoint `http://127.0.0.1:18740/mcp`; stdio bridge `java -jar <CAMEO_HOME>/plugins/com.cameomcp.plugin/cameo-mcp-stdio.jar --port 18740`.
+- First call `cameo_status`. `project.kind` is `uml` or `sysml2`; with no project open, `cameo_create_new_project` (kind `sysml2` or `uml`; the SysML v2 Community edition only opens SysML v2 projects).
+- Use `cameo_log` for milestones so the user can follow along in Cameo. Every write tool is one undo step (`cameo_undo`).
 
-## 2. Core Modeling Workflows
-- **System Structure & BDD (`model_system_structure` prompt)**:
-  1. Create packages, blocks, value types, flow properties, and ports in a single undoable step via `cameo_create_elements`.
-  2. Set property types, multiplicities, default values, and composite aggregations via `cameo_set_property_type`, `cameo_set_property_multiplicity`, `cameo_set_property_default_value`, and `cameo_set_property_aggregation`.
-  3. Create a BDD (`cameo_create_diagram`), populate symbols (`cameo_add_symbols_to_diagram`), draw paths (`cameo_add_path_to_diagram`), and run `cameo_layout_diagram` + `cameo_resize_symbols_to_fit`.
-- **Requirements & Traceability (`trace_requirements` prompt)**:
-  1. Import or create requirements (`cameo_apply_requirements_import` or `cameo_create_elements`).
-  2. Link `Satisfy`, `Verify`, `Derive`, and `Refine` relationships and build a native matrix (`cameo_create_matrix`) or Relation Map (`cameo_create_relation_map`).
-  3. Audit coverage with `cameo_trace_coverage_analysis` and `cameo_get_unlinked_requirements`.
-- **State Machines & Simulation (`build_state_machine` prompt)**:
-  1. Create a `StateMachine`, `InitialState`, `State` elements, and `Transition` links.
-  2. Configure triggers/guards (`cameo_set_transition_trigger`) and entry/do/exit behaviors (`cameo_set_state_behaviors`).
-  3. Verify reachability (`cameo_check_state_reachability`, `cameo_find_unreachable_states`) and execute simulation (`cameo_run_simulation`, `cameo_step_simulation`, `cameo_get_simulation_variables`).
-- **SysML v2 (Cameo 2026x `sysml2` family)**:
-  1. Parse or import textual SysML v2 (`cameo_sysml2_parse_text`, `cameo_sysml2_import`) or create SysML v2 definitions/usages (`cameo_sysml2_create_part`, `cameo_sysml2_create_port`, `cameo_sysml2_create_connection`).
-  2. Convert between SysML v1.x and SysML v2 branches using `cameo_sysml2_convert_v1_to_v2` and `cameo_sysml2_convert_v2_to_v1`.
+## SysML v1 / UML projects
+- Structure: `cameo_create_elements` in one call (packages, blocks, part/value properties with `properties.type`, `aggregation`, ports), then `cameo_create_diagram` (BDD/IBD), `cameo_add_to_diagram`, `cameo_layout_diagram`, `cameo_get_diagram_image` to check.
+- Requirements: create with `cameo_create_elements` (type Requirement, tagged values Id/Text), link with `cameo_create_relationship` (Satisfy, Verify, DeriveReqt, Refine, Trace), audit with `cameo_trace_coverage_analysis`; show with `cameo_create_matrix` or `cameo_create_relation_map`.
+- Behaviour: state machines via `cameo_create_elements`, `cameo_set_transition_trigger`, `cameo_set_state_behaviors`, `cameo_check_state_reachability`; sequence diagrams via `cameo_add_sequence_message`.
+- Documents: `cameo_list_report_templates`, then `cameo_generate_report`.
+
+## SysML v2 projects
+1. Look: `cameo_sysml2_list_roots`, `cameo_sysml2_get_tree`, `cameo_sysml2_find_elements`, `cameo_sysml2_get_element` (shows evaluated values).
+2. Write SysML v2 text and check it with `cameo_sysml2_check_text` (pass `ownerId` so names resolve as inside that owner).
+3. Add it with `cameo_sysml2_add_text` (fails without changes if the text has errors). For single changes: `cameo_sysml2_create_element` (kind = `part def`, `part`, `attribute`, `port`, `requirement def`, `constraint`, `state`, `action`, ...), `cameo_sysml2_set_property` (name, doc, type, specializes, multiplicity, value, valueExpression), `cameo_sysml2_connect` (connection, interface, binding, flow, succession, allocation, satisfy, dependency).
+4. Qualified names quote non-identifiers: `Model::'My Package'::Part`.
+5. Check: `cameo_sysml2_validate`, `cameo_evaluate_parametrics`, `cameo_sysml2_export_text`.
+
+## Analysis
+- `cameo_evaluate_parametrics`: values of attribute expressions and pass/fail of constraints. SysML v2: Cameo's evaluator, plus `inputs` for what-if (rolled back). SysML v1: Simulation Toolkit if installed.
+- `cameo_run_trade_study`: alternatives + criteria (`name`, `weight`, `goal` min/max, optional `limit`) → ranking and recommendation.
+- `cameo_get_simulation_status` / `cameo_run_simulation` need Cameo Simulation Toolkit.
+
+## Review
+- `cameo_proof_model_text` → findings + `patchPlan`; apply what the user accepts with `cameo_apply_proofing_patch` (`dryRun` first).
+- `cameo_list_methodology_packs`, `cameo_apply_methodology_pack`, `cameo_check_methodology_conformance`.
+- `cameo_generate_review_packet` writes review.md, findings.json and model.sysml (v2) or diagram PNGs (v1) to a folder.

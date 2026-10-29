@@ -64,7 +64,7 @@ final class AnalysisTools {
         });
 
         Tools.add(m, "cameo_trace_coverage_analysis", READ, c -> {
-            Element scope = c.has("scopeId") ? c.el("scopeId") : c.project().getPrimaryModel();
+            Element scope = c.has("scopeId") ? c.el("scopeId") : c.model();
             Stereotype req = Model.stereotype(c.project(), "Requirement");
             List<Element> reqs = new ArrayList<>();
             Model.walk(scope, e -> { if (StereotypesHelper.hasStereotypeOrDerived(e, req)) reqs.add(e); });
@@ -98,7 +98,7 @@ final class AnalysisTools {
         });
 
         Tools.add(m, "cameo_find_circular_dependencies", READ, c -> {
-            Element scope = c.has("scopeId") ? c.el("scopeId") : c.project().getPrimaryModel();
+            Element scope = c.has("scopeId") ? c.el("scopeId") : c.model();
             Set<String> types = lower(c.strs("relationshipTypes"));
             Set<Element> inScope = new HashSet<>();
             Model.walk(scope, inScope::add);
@@ -121,7 +121,7 @@ final class AnalysisTools {
 
         Tools.add(m, "cameo_get_orphan_elements", READ, c -> {
             Project p = c.project();
-            Element scope = c.has("scopeId") ? c.el("scopeId") : p.getPrimaryModel();
+            Element scope = c.has("scopeId") ? c.el("scopeId") : c.model();
             Set<Element> shown = new HashSet<>();
             for (DiagramPresentationElement d : p.getDiagrams()) {
                 if (Model.nearestPackage(d.getDiagram()) == null) continue;
@@ -185,7 +185,7 @@ final class AnalysisTools {
         });
 
         Tools.add(m, "cameo_calculate_metrics", READ, c -> {
-            Element scope = c.has("scopeId") ? c.el("scopeId") : c.project().getPrimaryModel();
+            Element scope = c.has("scopeId") ? c.el("scopeId") : c.model();
             Map<String, Integer> byType = new TreeMap<>(), bySt = new TreeMap<>();
             int[] n = {0, 0, 0, 0};
             Model.walk(scope, e -> {

@@ -6,14 +6,16 @@
     "Cameo Systems Modeler / CATIA Magic / Magic Systems of Systems Architect 2024x and 2026x"
   ],
   "endpoint": "http://127.0.0.1:18740/mcp",
-  "totalTools": 105,
+  "totalTools": 134,
   "families": {
     "server": 16,
     "model": 29,
-    "diagrams": 24,
-    "artifacts": 15,
+    "diagrams": 27,
+    "artifacts": 16,
     "advanced": 14,
-    "analysis": 7
+    "analysis": 11,
+    "methodology": 6,
+    "sysml2": 15
   },
   "tools": [
     {
@@ -53,7 +55,7 @@
         "properties": {
           "family": {
             "type": "string",
-            "description": "server, model, diagrams, artifacts, advanced or analysis"
+            "description": "server, model, diagrams, artifacts, advanced, analysis, methodology or sysml2"
           },
           "query": {
             "type": "string",
@@ -347,13 +349,21 @@
     {
       "name": "cameo_create_new_project",
       "family": "model",
-      "description": "Create a new empty project and make it active; optionally save it to a file.",
+      "description": "Create a new project and make it active: a SysML v2 project from Cameo's SysML v2 template (default in the SysML v2 Community edition), an empty UML project, or any template; optionally save it to a file.",
       "inputSchema": {
         "type": "object",
         "properties": {
+          "kind": {
+            "type": "string",
+            "description": "auto (default), sysml2 or uml"
+          },
+          "templatePath": {
+            "type": "string",
+            "description": "Create from this template file (.mdzip/.mdszip) instead"
+          },
           "filePath": {
             "type": "string",
-            "description": "Optional .mdzip path to save the new project to"
+            "description": "Optional path to save the new project to"
           },
           "timeoutSeconds": {
             "type": "integer",
@@ -2971,6 +2981,985 @@
           "scopeId": {
             "type": "string",
             "description": "Package (default primary model)"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        }
+      }
+    },
+    {
+      "name": "cameo_create_relation_map",
+      "family": "diagrams",
+      "description": "Create a Relation Map diagram centred on a context element, showing the elements related to it up to a depth (UML/SysML v1 projects; needs the Relation Map plugin).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "contextId": {
+            "type": "string",
+            "description": "Element the map is centred on"
+          },
+          "ownerId": {
+            "type": "string",
+            "description": "Package to own the diagram (default: the context's package)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Diagram name"
+          },
+          "depth": {
+            "type": "integer",
+            "description": "Relationship hops to show (default 3)"
+          },
+          "scopeIds": {
+            "type": "array",
+            "description": "Only show elements inside these packages",
+            "items": {
+              "type": "string"
+            }
+          },
+          "elementTypeIds": {
+            "type": "array",
+            "description": "Only show elements of these metaclasses/stereotypes (element ids)",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "contextId"
+        ]
+      }
+    },
+    {
+      "name": "cameo_refresh_relation_map",
+      "family": "diagrams",
+      "description": "Rebuild a Relation Map from the current model, optionally with a new context element or depth.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "diagramId": {
+            "type": "string",
+            "description": "Relation Map diagram id"
+          },
+          "contextId": {
+            "type": "string",
+            "description": "New context element"
+          },
+          "depth": {
+            "type": "integer",
+            "description": "New depth"
+          },
+          "scopeIds": {
+            "type": "array",
+            "description": "Scope packages",
+            "items": {
+              "type": "string"
+            }
+          },
+          "elementTypeIds": {
+            "type": "array",
+            "description": "Element type filter",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "diagramId"
+        ]
+      }
+    },
+    {
+      "name": "cameo_add_sequence_message",
+      "family": "diagrams",
+      "description": "Draw a message between two lifelines on a sequence diagram (creates the Message, its occurrences and the symbol).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "diagramId": {
+            "type": "string",
+            "description": "Sequence diagram id"
+          },
+          "fromLifelineId": {
+            "type": "string",
+            "description": "Sending lifeline"
+          },
+          "toLifelineId": {
+            "type": "string",
+            "description": "Receiving lifeline (same as from for a self message)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Message name"
+          },
+          "sort": {
+            "type": "string",
+            "description": "synchCall (default), asynchCall, asynchSignal, reply, create or delete"
+          },
+          "signatureId": {
+            "type": "string",
+            "description": "Operation or signal the message invokes"
+          },
+          "afterMessageId": {
+            "type": "string",
+            "description": "Place after this message (default: at the end)"
+          },
+          "verticalGap": {
+            "type": "integer",
+            "description": "Pixels below the previous message (default 30)"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "diagramId",
+          "fromLifelineId",
+          "toLifelineId"
+        ]
+      }
+    },
+    {
+      "name": "cameo_generate_report",
+      "family": "artifacts",
+      "description": "Generate a document with a Report Wizard template (docx, html, xlsx... as the template defines) for packages of a UML/SysML v1 project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "template": {
+            "type": "string",
+            "description": "Template name from cameo_list_report_templates"
+          },
+          "report": {
+            "type": "string",
+            "description": "Report data name inside the template (default: its default)"
+          },
+          "scopeIds": {
+            "type": "array",
+            "description": "Packages to report on (default: whole model)",
+            "items": {
+              "type": "string"
+            }
+          },
+          "recursive": {
+            "type": "boolean",
+            "description": "Include nested packages (default true)"
+          },
+          "outputFile": {
+            "type": "string",
+            "description": "Output file path; the extension must match the template format"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "template",
+          "outputFile"
+        ]
+      }
+    },
+    {
+      "name": "cameo_evaluate_parametrics",
+      "family": "analysis",
+      "description": "Evaluate parametrics: every attribute value expression and constraint under an element, with pass/fail per constraint. SysML v2 uses Cameo's built-in evaluator (no Simulation Toolkit needed) and accepts what-if inputs that are rolled back afterwards; SysML v1 uses the Simulation Toolkit when installed, otherwise lists equations and current values.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "elementId": {
+            "type": "string",
+            "description": "Definition, usage or package to evaluate (v2), or block / constraint block (v1)"
+          },
+          "inputs": {
+            "type": "object",
+            "description": "What-if values by feature name or path, e.g. {\"mass\": 1200, \"engine.power\": 150}; applied temporarily",
+            "additionalProperties": true
+          },
+          "outputs": {
+            "type": "array",
+            "description": "v1 Simulation Toolkit only: value properties to return",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "elementId"
+        ]
+      }
+    },
+    {
+      "name": "cameo_run_trade_study",
+      "family": "analysis",
+      "description": "Rank alternatives by weighted, min-max normalized criteria read from their attribute values (v2 evaluated values or v1 default values). Supports limits that make an alternative infeasible.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "alternatives": {
+            "type": "array",
+            "description": "Two or more alternative elements (ids or qualified names), e.g. part definitions or blocks",
+            "items": {
+              "type": "string"
+            }
+          },
+          "criteria": {
+            "type": "array",
+            "description": "Criteria",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Attribute name or path present on every alternative"
+                },
+                "weight": {
+                  "type": "number",
+                  "description": "Relative weight (default 1)"
+                },
+                "goal": {
+                  "type": "string",
+                  "description": "max (default) or min"
+                },
+                "limit": {
+                  "type": "number",
+                  "description": "Optional bound: min goals must be <= limit, max goals >= limit"
+                }
+              },
+              "required": [
+                "name"
+              ]
+            }
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "alternatives",
+          "criteria"
+        ]
+      }
+    },
+    {
+      "name": "cameo_get_simulation_status",
+      "family": "analysis",
+      "description": "Whether Cameo Simulation Toolkit is installed, whether SysML v2 evaluation is available, and the SimulationConfig elements of a v1 project.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        }
+      }
+    },
+    {
+      "name": "cameo_run_simulation",
+      "family": "analysis",
+      "description": "Run a Cameo Simulation Toolkit simulation (activity, state machine, block or SimulationConfig) and return output values. Needs Simulation Toolkit; runs off the UI thread.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "targetId": {
+            "type": "string",
+            "description": "Element to simulate"
+          },
+          "configId": {
+            "type": "string",
+            "description": "SimulationConfig to use"
+          },
+          "inputs": {
+            "type": "object",
+            "description": "Input values by name",
+            "additionalProperties": true
+          },
+          "outputs": {
+            "type": "array",
+            "description": "Names of values to return",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "targetId"
+        ]
+      }
+    },
+    {
+      "name": "cameo_list_methodology_packs",
+      "family": "methodology",
+      "description": "Built-in methodology packs (MagicGrid, SysML v2 starter, OOSEM): their package layout, the purpose of each package and the element kinds expected in it.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        }
+      }
+    },
+    {
+      "name": "cameo_apply_methodology_pack",
+      "family": "methodology",
+      "description": "Create a methodology pack's package skeleton (with documented purposes) in the model; works for SysML v1 and v2 projects.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pack": {
+            "type": "string",
+            "description": "Pack id from cameo_list_methodology_packs"
+          },
+          "ownerId": {
+            "type": "string",
+            "description": "Owner package/namespace (default: model root)"
+          },
+          "rootName": {
+            "type": "string",
+            "description": "Name of the top package (default: pack title)"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "pack"
+        ]
+      }
+    },
+    {
+      "name": "cameo_check_methodology_conformance",
+      "family": "methodology",
+      "description": "Check a model against a methodology pack: which packages exist, which expected element kinds are missing, and a conformance score.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "pack": {
+            "type": "string",
+            "description": "Pack id"
+          },
+          "rootId": {
+            "type": "string",
+            "description": "Top package created by the pack (default: found by the pack title)"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "pack"
+        ]
+      }
+    },
+    {
+      "name": "cameo_proof_model_text",
+      "family": "methodology",
+      "description": "Proofread element names and documentation: whitespace, repeated words, common misspellings, TODO/TBD placeholders, default names, naming conventions and missing documentation. Returns findings and a patch plan.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "scopeId": {
+            "type": "string",
+            "description": "Package or element to check (default: whole model)"
+          },
+          "checkNaming": {
+            "type": "boolean",
+            "description": "Check UpperCamelCase definitions / lowerCamelCase usages (default true)"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Max findings listed (default 500)"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        }
+      }
+    },
+    {
+      "name": "cameo_apply_proofing_patch",
+      "family": "methodology",
+      "description": "Apply name/documentation fixes (for example the patchPlan from cameo_proof_model_text) in one undoable step.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "patches": {
+            "type": "array",
+            "description": "Changes",
+            "items": {
+              "type": "object",
+              "properties": {
+                "elementId": {
+                  "type": "string",
+                  "description": "Element id"
+                },
+                "field": {
+                  "type": "string",
+                  "description": "name or documentation"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "New text"
+                }
+              },
+              "required": [
+                "elementId",
+                "field",
+                "value"
+              ]
+            }
+          },
+          "dryRun": {
+            "type": "boolean",
+            "description": "Only report what would change"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "patches"
+        ]
+      }
+    },
+    {
+      "name": "cameo_generate_review_packet",
+      "family": "methodology",
+      "description": "Write a review packet to a folder: review.md (contents, validation, parametric results, proofing), findings.json, the SysML v2 text (v2) or diagram PNGs (v1).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "directory": {
+            "type": "string",
+            "description": "Output folder"
+          },
+          "scopeId": {
+            "type": "string",
+            "description": "Package to review (default: whole model)"
+          },
+          "maxDiagrams": {
+            "type": "integer",
+            "description": "v1: most diagrams to export (default 50)"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "directory"
+        ]
+      }
+    },
+    {
+      "name": "cameo_sysml2_list_roots",
+      "family": "sysml2",
+      "description": "Root namespaces of the SysML v2 project (one per imported text file plus the template's) with their top-level members.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "includeLibraries": {
+            "type": "boolean",
+            "description": "Also list the standard library roots"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        }
+      }
+    },
+    {
+      "name": "cameo_sysml2_get_element",
+      "family": "sysml2",
+      "description": "Details of a SysML v2 element: kind, keyword, owner, documentation, types, specializations, multiplicity, value expression and its evaluated value, constraint result, members.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "elementId": {
+            "type": "string",
+            "description": "SysML v2 element id or qualified name (e.g. Model::Vehicle::engine)"
+          },
+          "evaluate": {
+            "type": "boolean",
+            "description": "Evaluate value expressions and constraints (default true)"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "elementId"
+        ]
+      }
+    },
+    {
+      "name": "cameo_sysml2_get_tree",
+      "family": "sysml2",
+      "description": "Containment tree of a SysML v2 model or element.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "rootId": {
+            "type": "string",
+            "description": "Start element (default: all project roots)"
+          },
+          "depth": {
+            "type": "integer",
+            "description": "Levels (default 3)"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        }
+      }
+    },
+    {
+      "name": "cameo_sysml2_find_elements",
+      "family": "sysml2",
+      "description": "Find SysML v2 elements by kind (keyword like 'part def', 'requirement' or metaclass like PartUsage) and/or name regex.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "description": "Keyword or metaclass"
+          },
+          "name": {
+            "type": "string",
+            "description": "Regular expression on the name"
+          },
+          "scopeId": {
+            "type": "string",
+            "description": "Search below this element"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Max results (default 200)"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        }
+      }
+    },
+    {
+      "name": "cameo_sysml2_create_element",
+      "family": "sysml2",
+      "description": "Create a SysML v2 element (any definition or usage: part def, part, port def, port, attribute, item, action, state, requirement, constraint, calc, connection, interface, allocation, use case, analysis, verification, package...) under an owner. Cameo parses the generated SysML text, so references resolve like in the text editor.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "description": "Keyword, e.g. 'part def', 'part', 'requirement def', 'attribute', 'state' (or metaclass name)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name"
+          },
+          "ownerId": {
+            "type": "string",
+            "description": "Owner (default: the Model package)"
+          },
+          "type": {
+            "type": "array",
+            "description": "Types (definitions) by id or qualified name, e.g. ScalarValues::Real",
+            "items": {
+              "type": "string"
+            }
+          },
+          "specializes": {
+            "type": "array",
+            "description": "Supertypes / subsetted features",
+            "items": {
+              "type": "string"
+            }
+          },
+          "redefines": {
+            "type": "array",
+            "description": "Redefined features",
+            "items": {
+              "type": "string"
+            }
+          },
+          "multiplicity": {
+            "type": "string",
+            "description": "e.g. 4, 0..1, 1..*"
+          },
+          "value": {
+            "type": "string",
+            "description": "Value expression, e.g. 1200 or m1 + m2 or 5 [SI::kg]"
+          },
+          "direction": {
+            "type": "string",
+            "description": "in, out or inout (for parameters and port features)"
+          },
+          "isAbstract": {
+            "type": "boolean",
+            "description": "Abstract definition"
+          },
+          "shortName": {
+            "type": "string",
+            "description": "Short name (id) such as R1"
+          },
+          "documentation": {
+            "type": "string",
+            "description": "Documentation text"
+          },
+          "body": {
+            "type": "string",
+            "description": "Extra SysML text placed inside the element's body"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      }
+    },
+    {
+      "name": "cameo_sysml2_add_text",
+      "family": "sysml2",
+      "description": "Add any SysML v2 text (several elements, nested bodies, connections, states...) inside an owner. Names resolve as if the text were written in the owner. Fails without changing the model if the text has errors.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "SysML v2 textual notation"
+          },
+          "ownerId": {
+            "type": "string",
+            "description": "Owner (default: the Model package)"
+          },
+          "allowErrors": {
+            "type": "boolean",
+            "description": "Import even with name-resolution errors"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "cameo_sysml2_check_text",
+      "family": "sysml2",
+      "description": "Parse SysML v2 text and return syntax and name-resolution diagnostics without changing the model.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "SysML v2 text"
+          },
+          "ownerId": {
+            "type": "string",
+            "description": "Resolve names as if the text were inside this element"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      }
+    },
+    {
+      "name": "cameo_sysml2_import_file",
+      "family": "sysml2",
+      "description": "Import a .sysml file into the project as a new root namespace.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "filePath": {
+            "type": "string",
+            "description": "Path of the .sysml file"
+          },
+          "allowErrors": {
+            "type": "boolean",
+            "description": "Import even with errors"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "filePath"
+        ]
+      }
+    },
+    {
+      "name": "cameo_sysml2_export_text",
+      "family": "sysml2",
+      "description": "SysML v2 textual notation of elements (default: the whole project model), optionally written to a file.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "elementIds": {
+            "type": "array",
+            "description": "Elements to export (default: all project roots)",
+            "items": {
+              "type": "string"
+            }
+          },
+          "filePath": {
+            "type": "string",
+            "description": "Also write the text to this file"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        }
+      }
+    },
+    {
+      "name": "cameo_sysml2_set_property",
+      "family": "sysml2",
+      "description": "Change a SysML v2 element: name, short name, documentation, abstract, direction, types, add specializations, multiplicity, literal value or value expression.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "elementId": {
+            "type": "string",
+            "description": "SysML v2 element id or qualified name (e.g. Model::Vehicle::engine)"
+          },
+          "name": {
+            "type": "string",
+            "description": "New name"
+          },
+          "shortName": {
+            "type": "string",
+            "description": "New short name"
+          },
+          "documentation": {
+            "type": "string",
+            "description": "Documentation text"
+          },
+          "isAbstract": {
+            "type": "boolean",
+            "description": "Abstract"
+          },
+          "direction": {
+            "type": "string",
+            "description": "in, out or inout"
+          },
+          "type": {
+            "type": "array",
+            "description": "Replace the types with these",
+            "items": {
+              "type": "string"
+            }
+          },
+          "specializes": {
+            "type": "array",
+            "description": "Add these supertypes / subsetted features",
+            "items": {
+              "type": "string"
+            }
+          },
+          "multiplicity": {
+            "type": "string",
+            "description": "e.g. 0..*"
+          },
+          "value": {
+            "type": [
+              "number",
+              "boolean",
+              "string"
+            ],
+            "description": "Literal value (number, boolean or string)"
+          },
+          "valueExpression": {
+            "type": "string",
+            "description": "Value expression text, e.g. m1 + m2"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "elementId"
+        ]
+      }
+    },
+    {
+      "name": "cameo_sysml2_delete_element",
+      "family": "sysml2",
+      "description": "Delete SysML v2 elements (with their memberships).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "elementIds": {
+            "type": "array",
+            "description": "Elements to delete",
+            "items": {
+              "type": "string"
+            }
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "elementIds"
+        ]
+      },
+      "destructive": true
+    },
+    {
+      "name": "cameo_sysml2_move_element",
+      "family": "sysml2",
+      "description": "Move a SysML v2 element to a new owner.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "elementId": {
+            "type": "string",
+            "description": "SysML v2 element id or qualified name (e.g. Model::Vehicle::engine)"
+          },
+          "newOwnerId": {
+            "type": "string",
+            "description": "New owner"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "elementId",
+          "newOwnerId"
+        ]
+      }
+    },
+    {
+      "name": "cameo_sysml2_get_relationships",
+      "family": "sysml2",
+      "description": "Relationships of a SysML v2 element: owned (typing, specialization, subsetting...) and incoming (who types, specializes, references or satisfies it).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "elementId": {
+            "type": "string",
+            "description": "SysML v2 element id or qualified name (e.g. Model::Vehicle::engine)"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "elementId"
+        ]
+      }
+    },
+    {
+      "name": "cameo_sysml2_connect",
+      "family": "sysml2",
+      "description": "Connect two features in a SysML v2 owner: connection, interface, binding, flow, succession, allocation, satisfy or dependency. Ends are feature names/paths as seen from the owner (e.g. engine.shaft).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "ownerId": {
+            "type": "string",
+            "description": "Definition or usage that owns the connection"
+          },
+          "kind": {
+            "type": "string",
+            "description": "connection, interface, binding, flow, succession, allocation, satisfy, dependency"
+          },
+          "source": {
+            "type": "string",
+            "description": "Source end (satisfy: the requirement)"
+          },
+          "target": {
+            "type": "string",
+            "description": "Target end (satisfy: the satisfying feature)"
+          },
+          "name": {
+            "type": "string",
+            "description": "Optional name"
+          },
+          "type": {
+            "type": "string",
+            "description": "Connection/interface/allocation definition"
+          },
+          "itemType": {
+            "type": "string",
+            "description": "flow: type of the item that flows"
+          },
+          "timeoutSeconds": {
+            "type": "integer",
+            "description": "Give up waiting after this many seconds (default 120)"
+          }
+        },
+        "required": [
+          "ownerId",
+          "kind",
+          "source",
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "cameo_sysml2_validate",
+      "family": "sysml2",
+      "description": "Check a SysML v2 model: unnamed definitions, untyped usages, duplicate names, requirements without satisfy or text, and constraints that evaluate to false.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "scopeId": {
+            "type": "string",
+            "description": "Element to check (default: whole project)"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Max issues listed (default 300)"
           },
           "timeoutSeconds": {
             "type": "integer",

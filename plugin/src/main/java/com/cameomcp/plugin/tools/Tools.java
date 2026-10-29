@@ -32,6 +32,16 @@ public final class Tools {
         ArtifactTools.register(m);
         AdvancedTools.register(m);
         AnalysisTools.register(m);
+        StudyTools.register(m);
+        MethodTools.register(m);
+        ExtraTools.register(m);
+        try {
+            Class.forName("com.dassault_systemes.modeler.kerml.model.kerml.Namespace", false, Tools.class.getClassLoader());
+            Sysml2Tools.register(m);
+            v2Available = true;
+        } catch (ClassNotFoundException | LinkageError e) {
+            v2Available = false; // this Cameo has no SysML v2 support; the sysml2 tools are not offered
+        }
         return Collections.unmodifiableMap(m);
     }
 
@@ -39,12 +49,20 @@ public final class Tools {
         if (m.put(name, new Tool(name, mode, h)) != null) throw new IllegalStateException("Duplicate tool " + name);
     }
 
+    /** True when Cameo's SysML v2 classes are loadable (set by all()). */
+    static volatile boolean v2Available;
+
     static CallGuard guard; // set per call; read by execute_macro
 
     public static Object execute(Tool tool, JsonNode args, CallGuard callGuard) throws Exception {
         guard = callGuard;
         FutureTask<Object> task = new FutureTask<>(() -> run(tool, args));
-        if (SwingUtilities.isEventDispatchThread()) task.run();
+        if (tool.mode() == Tool.Mode.BACKGROUND) {
+            // Blocking calls (simulation) run on their own thread so Cameo's UI thread stays free.
+            Thread th = new Thread(task, "cameo-mcp " + tool.name());
+            th.setDaemon(true);
+            th.start();
+        } else if (SwingUtilities.isEventDispatchThread()) task.run();
         else SwingUtilities.invokeLater(task);
         int timeout = args.path("timeoutSeconds").asInt(DEFAULT_TIMEOUT_S);
         try {
@@ -59,21 +77,39 @@ public final class Tools {
         Project p = Application.getInstance().getProject();
         Ctx c = new Ctx(args, p);
         if (tool.mode() != Tool.Mode.WRITE) return tool.handler().run(c);
-        Project project = c.project();
+        return inSession(c.project(), "MCP: " + tool.name(), () -> tool.handler().run(c));
+    }
+
+    interface Body<T> { T run() throws Exception; }
+
+    /** Run body in one undoable editing session; refuses if a session is already open. */
+    static <T> T inSession(Project project, String name, Body<T> body) throws Exception {
         SessionManager sm = SessionManager.getInstance();
         if (sm.isSessionCreated(project)) {
             // Never cancel it: it is usually the user's own unfinished edit.
             throw new ToolError("Cameo already has an open editing session (the user is editing, or an earlier "
                     + "operation got stuck). Finish the edit in Cameo, or call cameo_reset_session if nothing is in progress.");
         }
-        sm.createSession(project, "MCP: " + tool.name());
+        sm.createSession(project, name);
         try {
-            Object r = tool.handler().run(c);
+            T r = body.run();
             sm.closeSession(project);
             return r;
         } catch (Throwable t) {
             if (sm.isSessionCreated(project)) sm.cancelSession(project);
             throw t;
+        }
+    }
+
+    /** Run body in a session and always roll it back (for what-if evaluation). */
+    static <T> T inRolledBackSession(Project project, String name, Body<T> body) throws Exception {
+        SessionManager sm = SessionManager.getInstance();
+        if (sm.isSessionCreated(project)) throw new ToolError("Cameo already has an open editing session; finish it first.");
+        sm.createSession(project, name);
+        try {
+            return body.run();
+        } finally {
+            if (sm.isSessionCreated(project)) sm.cancelSession(project);
         }
     }
 }

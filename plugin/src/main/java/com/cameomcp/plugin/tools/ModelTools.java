@@ -37,6 +37,12 @@ final class ModelTools {
 
     private ModelTools() {}
 
+    /** The SysML v2 Community edition only opens SysML v2 projects. */
+    static boolean communityMode() {
+        String n = Application.runtime().getApplicationName();
+        return n != null && n.contains("Community");
+    }
+
     static void register(Map<String, Tool> m) {
         // ---------------------------------------------------------------- projects
         Tools.add(m, "cameo_get_project", READ, c -> {
@@ -44,7 +50,8 @@ final class ModelTools {
             ObjectNode o = Catalog.JSON.createObjectNode().put("name", p.getName()).put("dirty", p.isDirty())
                     .put("remote", p.isRemote()).put("file", p.getFileName())
                     .put("location", String.valueOf(p.getPrimaryProject().getLocationURI()));
-            o.set("primaryModel", Model.ref(p.getPrimaryModel()));
+            o.put("kind", p.getPrimaryModel() == null ? "sysml2" : "uml");
+            if (p.getPrimaryModel() != null) o.set("primaryModel", Model.ref(p.getPrimaryModel()));
             ArrayNode models = o.putArray("models");
             p.getModels().forEach(x -> models.add(Model.ref(x)));
             o.put("diagramCount", p.getDiagrams().size());
@@ -69,14 +76,31 @@ final class ModelTools {
 
         Tools.add(m, "cameo_create_new_project", APP, c -> {
             ProjectsManager pm = Application.getInstance().getProjectsManager();
-            Project p = pm.createProject();
+            String kind = c.str("kind", "auto").toLowerCase(Locale.ROOT);
+            String template = c.opt("templatePath");
+            if (template == null && (kind.equals("sysml2") || kind.equals("auto") && communityMode())) {
+                File t = new File(Application.environment().getInstallRoot(), "templates/SysML v2/SysML v2.mdszip");
+                if (!t.isFile()) throw new ToolError("SysML v2 template not found at " + t + "; pass templatePath");
+                template = t.getAbsolutePath();
+            }
+            Project p;
+            if (template != null) {
+                if (!new File(template).isFile()) throw new ToolError("No such template: " + template);
+                p = pm.createProjectFromTemplate(template);
+            } else {
+                p = pm.createProject();
+            }
             if (p == null) throw new ToolError("Cameo did not create a project");
             if (c.has("filePath")) {
                 File f = new File(c.str("filePath"));
                 if (!pm.saveProject(ProjectDescriptorsFactory.createLocalProjectDescriptor(p, f), true))
                     throw new ToolError("Project created but could not be saved to " + f);
             }
-            return Catalog.JSON.createObjectNode().put("name", p.getName()).put("primaryModelId", p.getPrimaryModel().getID());
+            ObjectNode o = Catalog.JSON.createObjectNode().put("name", p.getName())
+                    .put("kind", p.getPrimaryModel() == null ? "sysml2" : "uml");
+            if (template != null) o.put("template", template);
+            if (p.getPrimaryModel() != null) o.put("primaryModelId", p.getPrimaryModel().getID());
+            return o;
         });
 
         Tools.add(m, "cameo_open_project_file", APP, c -> {
@@ -127,7 +151,7 @@ final class ModelTools {
         // ---------------------------------------------------------------- reading
         Tools.add(m, "cameo_query_elements", READ, c -> {
             Project p = c.project();
-            Element scope = c.has("scopeId") ? c.el("scopeId") : p.getPrimaryModel();
+            Element scope = c.has("scopeId") ? c.el("scopeId") : c.model();
             String type = c.opt("type");
             String stereo = c.opt("stereotype");
             String nameQ = c.opt("name");
@@ -165,7 +189,7 @@ final class ModelTools {
         });
 
         Tools.add(m, "cameo_get_containment_tree", READ, c -> {
-            Element root = c.has("rootId") ? c.el("rootId") : c.project().getPrimaryModel();
+            Element root = c.has("rootId") ? c.el("rootId") : c.model();
             int depth = c.i("depth", 2);
             int[] budget = {c.i("limit", 500)};
             return tree(root, depth, budget);
@@ -184,7 +208,7 @@ final class ModelTools {
         // ---------------------------------------------------------------- writing
         Tools.add(m, "cameo_create_element", WRITE, c -> {
             Project p = c.project();
-            Element parent = c.has("parentId") ? c.el("parentId") : p.getPrimaryModel();
+            Element parent = c.has("parentId") ? c.el("parentId") : c.model();
             Element e = Model.create(p, c.str("type"), parent, c.opt("name"));
             applyCommon(p, e, c.args);
             return Model.summary(e);
@@ -195,7 +219,7 @@ final class ModelTools {
             Map<String, Element> refs = new LinkedHashMap<>();
             ArrayNode created = Catalog.JSON.createArrayNode();
             for (JsonNode spec : c.node("elements")) {
-                Element parent = spec.has("parent") ? resolve(c, refs, spec.get("parent").asText()) : p.getPrimaryModel();
+                Element parent = spec.has("parent") ? resolve(c, refs, spec.get("parent").asText()) : c.model();
                 Element e = Model.create(p, need(spec, "type"), parent, spec.path("name").asText(null));
                 applyCommon(p, e, spec);
                 if (spec.has("ref")) refs.put(spec.get("ref").asText(), e);

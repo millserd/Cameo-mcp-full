@@ -39,6 +39,7 @@ final class ArtifactTools {
         // ---------------------------------------------------------------- generic tables
         Tools.add(m, "cameo_create_table", WRITE, c -> {
             Project p = c.project();
+            c.model(); // generic tables need a UML model
             Diagram t = GenericTableManager.createGenericTable(p, c.str("name", "Table"));
             if (c.has("ownerId")) ModelElementsManager.getInstance().moveElement(t, c.el("ownerId"));
             if (c.has("elementTypes")) GenericTableManager.setTableElementTypes(t, new ArrayList<>(types(p, c.strs("elementTypes"))));
@@ -124,7 +125,7 @@ final class ArtifactTools {
         // ---------------------------------------------------------------- dependency matrices
         Tools.add(m, "cameo_create_matrix", WRITE, c -> {
             Project p = c.project();
-            Element owner = c.has("ownerId") ? c.el("ownerId") : p.getPrimaryModel();
+            Element owner = c.has("ownerId") ? c.el("ownerId") : c.model();
             if (!(owner instanceof Namespace ns)) throw new ToolError("Matrix owner must be a namespace");
             String type = c.str("type", "Dependency Matrix");
             Diagram d = ModelElementsManager.getInstance().createDiagram(type, ns);
