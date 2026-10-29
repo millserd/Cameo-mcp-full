@@ -18,7 +18,7 @@ import java.awt.*;
  *
  * Displays:
  * - Server state, active endpoint (http://127.0.0.1:18740/mcp), and port configuration
- * - Connected MCP client sessions, total requests, and 365-tool catalog summary
+ * - Connected MCP client sessions, total requests, and tool count
  * - Bearer token configuration and macro execution safety toggle
  * - One-click Connection Self-Test (publishing directly to Cameo's Notification window & md.log)
  * - Force Reset Stuck SessionManager Transaction & Copy Client Config JSON
@@ -46,7 +46,6 @@ public class McpStatusWindow extends JDialog {
         buildUi();
         refreshState();
         this.refreshTimer = new Timer(1500, e -> refreshState());
-        this.refreshTimer.start();
     }
 
     public static void showWindow(CameoMcpPlugin plugin) {
@@ -99,17 +98,24 @@ public class McpStatusWindow extends JDialog {
         configRow.add(tokenField);
         JButton applyBtn = new JButton("Save & Restart");
         applyBtn.addActionListener(e -> {
+            int newPort;
             try {
-                int newPort = Integer.parseInt(portField.getText().trim());
-                plugin.getSettings().setBearerToken(tokenField.getText().trim());
-                plugin.getSettings().setAllowMacros(allowMacrosCheck.isSelected());
-                plugin.getRuntime().getCallGuard().setBearerToken(tokenField.getText().trim());
-                plugin.getRuntime().getCallGuard().setAllowMacros(allowMacrosCheck.isSelected());
-                plugin.getRuntime().restartWithPort(newPort);
-                refreshState();
+                newPort = Integer.parseInt(portField.getText().trim());
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Invalid port number.", "Error", JOptionPane.ERROR_MESSAGE);
+                newPort = -1;
             }
+            if (!Settings.isValidPort(newPort)) {
+                JOptionPane.showMessageDialog(this, "Port must be a number from 1024 to 65535.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            plugin.getSettings().setBearerToken(tokenField.getText().trim());
+            plugin.getSettings().setAllowMacros(allowMacrosCheck.isSelected());
+            plugin.getRuntime().getCallGuard().setBearerToken(tokenField.getText().trim());
+            plugin.getRuntime().getCallGuard().setAllowMacros(allowMacrosCheck.isSelected());
+            if (!plugin.getRuntime().restartWithPort(newPort))
+                JOptionPane.showMessageDialog(this, "Server could not start on port " + newPort + " (in use?). See the log below.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            refreshState();
         });
         configRow.add(applyBtn);
         infoGrid.add(configRow);
@@ -118,7 +124,8 @@ public class McpStatusWindow extends JDialog {
         allowMacrosCheck.addActionListener(e -> {
             plugin.getSettings().setAllowMacros(allowMacrosCheck.isSelected());
             plugin.getRuntime().getCallGuard().setAllowMacros(allowMacrosCheck.isSelected());
-            plugin.getSettings().save();
+            if (!plugin.getSettings().save())
+                JOptionPane.showMessageDialog(this, "Could not save settings; see the log.", "Error", JOptionPane.ERROR_MESSAGE);
         });
         infoGrid.add(allowMacrosCheck);
 
@@ -141,7 +148,9 @@ public class McpStatusWindow extends JDialog {
         JButton resetSessionBtn = new JButton("Reset Stuck Editing Session");
         resetSessionBtn.addActionListener(e -> {
             Project proj = Application.getInstance().getProject();
-            if (proj != null && SessionManager.getInstance().isSessionCreated(proj)) {
+            if (proj != null && SessionManager.getInstance().isSessionCreated(proj)
+                    && JOptionPane.showConfirmDialog(this, "Cancel the open editing session? Unfinished changes in it are discarded.",
+                    "Reset editing session", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
                 SessionManager.getInstance().cancelSession(proj);
                 CameoLog.warn("Cancelled active SessionManager transaction on project " + proj.getName());
             } else {
@@ -185,16 +194,17 @@ public class McpStatusWindow extends JDialog {
         Settings s = plugin.getSettings();
         if (rt != null && rt.isRunning()) {
             statusLabel.setText(String.format("ONLINE — http://%s:%d/mcp (%s)",
-                    s.getHost(), s.getPort(), McpRuntime.detectCameoRelease()));
+                    s.getHost(), s.getPort(), McpRuntime.cameoRelease()));
             statusLabel.setForeground(new Color(0, 128, 64));
         } else {
             statusLabel.setText("OFFLINE — Port " + s.getPort());
             statusLabel.setForeground(new Color(180, 20, 20));
         }
 
-        clientsLabel.setText(String.format("%d active session(s) | %d requests handled | 365 tools across 7 families",
+        clientsLabel.setText(String.format("%d active session(s) | %d requests handled | %d tools",
                 rt != null ? rt.getActiveClientSessionCount() : 0,
-                rt != null ? rt.getTotalRequests() : 0));
+                rt != null ? rt.getTotalRequests() : 0,
+                rt != null ? rt.getTools().size() : 0));
 
         Project proj = Application.getInstance().getProject();
         if (proj != null) {
@@ -205,10 +215,26 @@ public class McpStatusWindow extends JDialog {
             projectLabel.setText("No project open");
         }
 
-        StringBuilder sb = new StringBuilder();
-        for (String line : CameoLog.getRecentLogs()) {
-            sb.append(line).append('\n');
+        // Only touch the log when it changed, so scrolling and selecting text in it keeps working.
+        String last = CameoLog.getRecentLogs().peekLast();
+        if (last != null && !last.equals(lastLogLine)) {
+            lastLogLine = last;
+            StringBuilder sb = new StringBuilder();
+            for (String line : CameoLog.getRecentLogs()) {
+                sb.append(line).append('\n');
+            }
+            logArea.setText(sb.toString());
         }
-        logArea.setText(sb.toString());
+    }
+
+    private String lastLogLine;
+
+    /** The refresh timer runs only while the window is visible. */
+    @Override
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (refreshTimer == null) return;
+        if (visible) refreshTimer.start();
+        else refreshTimer.stop();
     }
 }

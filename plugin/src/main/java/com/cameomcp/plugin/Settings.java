@@ -19,7 +19,7 @@ public final class Settings {
     private int port = DEFAULT_PORT;
     private String host = "127.0.0.1";
     private String bearerToken = "";
-    private boolean allowMacros = true;
+    private boolean allowMacros = false; // scripts run arbitrary code inside Cameo: opt-in only
 
     public static Settings load() {
         Settings s = new Settings();
@@ -31,7 +31,7 @@ public final class Settings {
                 s.port = parsePort(p.getProperty("port"), DEFAULT_PORT);
                 s.host = p.getProperty("host", "127.0.0.1");
                 s.bearerToken = p.getProperty("bearerToken", "");
-                s.allowMacros = Boolean.parseBoolean(p.getProperty("allowMacros", "true"));
+                s.allowMacros = Boolean.parseBoolean(p.getProperty("allowMacros", "false"));
             } catch (Exception ignored) {}
         }
         String envPort = System.getenv("CAMEO_MCP_PORT");
@@ -48,7 +48,8 @@ public final class Settings {
         return s;
     }
 
-    public void save() {
+    /** Returns false (and logs why) if the settings file could not be written. */
+    public boolean save() {
         try {
             File propFile = getSettingsFile();
             propFile.getParentFile().mkdirs();
@@ -60,7 +61,11 @@ public final class Settings {
             try (FileOutputStream fos = new FileOutputStream(propFile)) {
                 p.store(fos, "Cameo MCP Plugin Settings");
             }
-        } catch (Exception ignored) {}
+            return true;
+        } catch (Exception e) {
+            CameoLog.error("Could not save " + getSettingsFile(), e);
+            return false;
+        }
     }
 
     public static File getSettingsFile() {
@@ -70,14 +75,22 @@ public final class Settings {
     private static int parsePort(String val, int fallback) {
         if (val == null || val.isBlank()) return fallback;
         try {
-            return Integer.parseInt(val.trim());
+            int port = Integer.parseInt(val.trim());
+            return isValidPort(port) ? port : fallback;
         } catch (NumberFormatException e) {
             return fallback;
         }
     }
 
+    public static boolean isValidPort(int port) {
+        return port >= 1024 && port <= 65535;
+    }
+
     public int getPort() { return port; }
-    public void setPort(int port) { this.port = port; }
+    public void setPort(int port) {
+        if (!isValidPort(port)) throw new IllegalArgumentException("Port must be 1024-65535");
+        this.port = port;
+    }
     public String getHost() { return host; }
     public String getBearerToken() { return bearerToken; }
     public void setBearerToken(String bearerToken) { this.bearerToken = bearerToken; }

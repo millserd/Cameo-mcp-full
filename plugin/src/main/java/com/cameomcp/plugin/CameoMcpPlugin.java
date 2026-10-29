@@ -44,8 +44,6 @@ public class CameoMcpPlugin extends Plugin {
             @Override
             public void projectOpened(Project project) {
                 CameoLog.info("Project opened: " + project.getName());
-                runtime.recordModelEvent("PROJECT_OPENED", project.getName(),
-                        project.getPrimaryModel() != null ? project.getPrimaryModel().getID() : "");
             }
 
             @Override

@@ -20,6 +20,15 @@ public final class Resources {
 
     private Resources() {}
 
+    /** Text of a bundled resource, or "" if missing. */
+    public static String text(String path) {
+        try (InputStream is = Resources.class.getResourceAsStream(path)) {
+            return is == null ? "" : new String(is.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (java.io.IOException e) {
+            return "";
+        }
+    }
+
     public static File syncToUserHome() {
         File baseDir = new File(System.getProperty("user.home"), ".cameo-mcp");
         for (String relPath : BUNDLED_FILES) {

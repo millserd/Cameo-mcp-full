@@ -1,54 +1,45 @@
 package com.cameomcp.mcp;
 
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Set;
 
-/**
- * Serializes mutating writes, checks browser Origin headers to block cross-site local attacks,
- * and validates optional Bearer tokens.
- */
+/** Request gate: browser Origin check, optional Bearer token, macro switch. */
 public final class CallGuard {
 
-    private final Semaphore writeLock = new Semaphore(1, true);
+    private static final Set<String> LOCAL_HOSTS = Set.of("localhost", "127.0.0.1", "[::1]", "::1");
+
     private volatile String bearerToken;
-    private volatile boolean allowMacros = true;
+    private volatile boolean allowMacros;
 
     public CallGuard(String bearerToken, boolean allowMacros) {
         this.bearerToken = bearerToken;
         this.allowMacros = allowMacros;
     }
 
-    public boolean verifyOrigin(String originHeader) {
-        if (originHeader == null || originHeader.isBlank()) {
-            return true; // Non-browser MCP stdio/HTTP client
+    /** No Origin = non-browser client. Otherwise the origin host must be exactly a loopback name. */
+    public boolean verifyOrigin(String origin) {
+        if (origin == null || origin.isBlank()) return true;
+        try {
+            URI u = URI.create(origin.trim());
+            String scheme = u.getScheme();
+            return ("http".equals(scheme) || "https".equals(scheme)) && u.getHost() != null
+                    && LOCAL_HOSTS.contains(u.getHost().toLowerCase());
+        } catch (IllegalArgumentException e) {
+            return false;
         }
-        return originHeader.startsWith("http://127.0.0.1") || originHeader.startsWith("http://localhost");
     }
 
     public boolean verifyBearerToken(String authHeader) {
-        if (bearerToken == null || bearerToken.isBlank()) {
-            return true; // Token auth disabled
-        }
-        return ("Bearer " + bearerToken).equals(authHeader);
+        String token = bearerToken;
+        if (token == null || token.isBlank()) return true;
+        if (authHeader == null || authHeader.length() < 7 || !authHeader.regionMatches(true, 0, "Bearer ", 0, 7)) return false;
+        return MessageDigest.isEqual(token.getBytes(StandardCharsets.UTF_8),
+                authHeader.substring(7).trim().getBytes(StandardCharsets.UTF_8));
     }
 
-    public boolean isMacrosAllowed() {
-        return allowMacros;
-    }
-
-    public void setAllowMacros(boolean allowMacros) {
-        this.allowMacros = allowMacros;
-    }
-
-    public void setBearerToken(String token) {
-        this.bearerToken = token;
-    }
-
-    public boolean acquireWriteLock(long timeoutMs) throws InterruptedException {
-        return writeLock.tryAcquire(timeoutMs, TimeUnit.MILLISECONDS);
-    }
-
-    public void releaseWriteLock() {
-        writeLock.release();
-    }
+    public boolean isMacrosAllowed() { return allowMacros; }
+    public void setAllowMacros(boolean allowMacros) { this.allowMacros = allowMacros; }
+    public void setBearerToken(String token) { this.bearerToken = token; }
 }
