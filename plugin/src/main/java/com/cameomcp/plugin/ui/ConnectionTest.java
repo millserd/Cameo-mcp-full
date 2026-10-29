@@ -8,7 +8,6 @@ import java.time.Duration;
 
 /**
  * Diagnostic utility verifying local HTTP connectivity to /status and /mcp
- * (aligned with millserd/Cameo-mcp ConnectionTest.java).
  */
 public final class ConnectionTest {
 

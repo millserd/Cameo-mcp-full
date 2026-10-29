@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 
 /**
  * Registers the top-level "MCP" menu in Cameo Systems Modeler / CATIA Magic (2024x & 2026x)
- * (aligned with millserd/Cameo-mcp McpMenuConfigurator.java).
  *
  * Menu Items:
  * 1. MCP Server Status... (opens McpStatusWindow)

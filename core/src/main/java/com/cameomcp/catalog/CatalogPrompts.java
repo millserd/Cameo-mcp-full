@@ -2,7 +2,6 @@ package com.cameomcp.catalog;
 
 /**
  * Pre-packaged multi-step MCP Prompts registered into the Cameo MCP Server
- * (aligned with millserd/Cameo-mcp CatalogPrompts.java).
  */
 public final class CatalogPrompts {
 

@@ -3,10 +3,6 @@
   "pluginId": "com.cameomcp.plugin",
   "version": "3.1.0",
   "protocolVersion": "2024-11-05",
-  "references": [
-    "https://github.com/millserd/Cameo-mcp",
-    "https://github.com/ajhcs/cameo-mcp-bridge"
-  ],
   "compatibility": [
     "Cameo Systems Modeler 2024x",
     "CATIA Magic 2024x",
@@ -311,7 +307,7 @@
       "family": "server",
       "catalogClass": "com.cameomcp.catalog.ServerTools",
       "kind": "read",
-      "description": "Inspect the Undo and Redo command stack names and depth in `project.getCommandHistory()`. [Retroactive OpenAPI Discovery]",
+      "description": "Inspect the Undo and Redo command stack names and depth in `project.getCommandHistory()`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -328,7 +324,7 @@
       "family": "server",
       "catalogClass": "com.cameomcp.catalog.ServerTools",
       "kind": "destructive",
-      "description": "Clear the project undo/redo command history buffer to reclaim memory after massive batch operations. [Retroactive OpenAPI Discovery]",
+      "description": "Clear the project undo/redo command history buffer to reclaim memory after massive batch operations.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -340,7 +336,7 @@
       "family": "server",
       "catalogClass": "com.cameomcp.catalog.ServerTools",
       "kind": "write",
-      "description": "Create N elements and apply stereotypes/tagged values in a single atomic SessionManager transaction (eliminating N-roundtrip latency). [Retroactive OpenAPI Discovery]",
+      "description": "Create N elements and apply stereotypes/tagged values in a single atomic SessionManager transaction (eliminating N-roundtrip latency).",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -359,7 +355,7 @@
       "family": "server",
       "catalogClass": "com.cameomcp.catalog.ServerTools",
       "kind": "write",
-      "description": "Create N relationships in a single atomic SessionManager transaction (supporting tempId references from batch creation). [Retroactive OpenAPI Discovery]",
+      "description": "Create N relationships in a single atomic SessionManager transaction (supporting tempId references from batch creation).",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -378,7 +374,7 @@
       "family": "server",
       "catalogClass": "com.cameomcp.catalog.ServerTools",
       "kind": "read",
-      "description": "Search registered Cameo menu, toolbar, and diagram `NMAction` IDs and names across `ActionsManager`. [Retroactive OpenAPI Discovery]",
+      "description": "Search registered Cameo menu, toolbar, and diagram `NMAction` IDs and names across `ActionsManager`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -395,7 +391,7 @@
       "family": "server",
       "catalogClass": "com.cameomcp.catalog.ServerTools",
       "kind": "read",
-      "description": "Invoke a registered Cameo `NMAction` by action ID on the Swing EDT (with safety blocklist against modal blocking dialogs). [Retroactive OpenAPI Discovery]",
+      "description": "Invoke a registered Cameo `NMAction` by action ID on the Swing EDT (with safety blocklist against modal blocking dialogs).",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -414,7 +410,7 @@
       "family": "server",
       "catalogClass": "com.cameomcp.catalog.ServerTools",
       "kind": "read",
-      "description": "Expand and highlight one or more elements in the Cameo Containment Tree via `Browser.getContainmentTree().openNode(element, true)`. [Retroactive OpenAPI Discovery]",
+      "description": "Expand and highlight one or more elements in the Cameo Containment Tree via `Browser.getContainmentTree().openNode(element, true)`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -433,7 +429,7 @@
       "family": "server",
       "catalogClass": "com.cameomcp.catalog.ServerTools",
       "kind": "read",
-      "description": "Publish a plain-text or HTML clickable message to the Cameo Messages/Notification Log window via `Application.getInstance().getGUILog().log()` and `NotificationManager`. [Retroactive OpenAPI Discovery]",
+      "description": "Publish a plain-text or HTML clickable message to the Cameo Messages/Notification Log window via `Application.getInstance().getGUILog().log()` and `NotificationManager`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1296,7 +1292,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "read",
-      "description": "Query incoming and outgoing relationships for an element with optional type and direction filters. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Query incoming and outgoing relationships for an element with optional type and direction filters.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1323,7 +1319,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "read",
-      "description": "Read explicit trigger, guard constraint, and effect behavior semantics for one state transition. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Read explicit trigger, guard constraint, and effect behavior semantics for one state transition.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1342,7 +1338,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "write",
-      "description": "Create or replace a SignalEvent, ChangeEvent, TimeEvent, or CallEvent trigger and guard on a transition. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Create or replace a SignalEvent, ChangeEvent, TimeEvent, or CallEvent trigger and guard on a transition.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1377,7 +1373,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "read",
-      "description": "Read structured entry, doActivity, and exit Behavior payloads on a State element. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Read structured entry, doActivity, and exit Behavior payloads on a State element.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1396,7 +1392,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "write",
-      "description": "Create or replace structured entry, doActivity, and exit OpaqueBehavior/Activity payloads on a State. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Create or replace structured entry, doActivity, and exit OpaqueBehavior/Activity payloads on a State.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1431,7 +1427,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "write",
-      "description": "Set or clear the UML subject Classifier list for a UseCase element. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Set or clear the UML subject Classifier list for a UseCase element.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1455,7 +1451,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "write",
-      "description": "Clone a collection of model elements and diagram symbols together via `CopyPasting.copyPasteElements(objects, dataParent, viewParent, withNewData, increaseNames)`. [Retroactive OpenAPI Discovery]",
+      "description": "Clone a collection of model elements and diagram symbols together via `CopyPasting.copyPasteElements(objects, dataParent, viewParent, withNewData, increaseNames)`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1487,7 +1483,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "read",
-      "description": "Copy visual styling from a source presentation element onto target symbols via `CopyPasting.copyPasteSymbolsStyle(source, targets)`. [Retroactive OpenAPI Discovery]",
+      "description": "Copy visual styling from a source presentation element onto target symbols via `CopyPasting.copyPasteSymbolsStyle(source, targets)`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1516,7 +1512,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "write",
-      "description": "Convert an element to another metaclass/type while preserving relationships and IDs via `Refactoring.Converting.convert(element, ConvertElementInfo)`. [Retroactive OpenAPI Discovery]",
+      "description": "Convert an element to another metaclass/type while preserving relationships and IDs via `Refactoring.Converting.convert(element, ConvertElementInfo)`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1544,7 +1540,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "write",
-      "description": "Replace all references and usages of one element with another via `Refactoring.Replacing.replace(elementToReplace, replacement, rules)`. [Retroactive OpenAPI Discovery]",
+      "description": "Replace all references and usages of one element with another via `Refactoring.Replacing.replace(elementToReplace, replacement, rules)`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1568,7 +1564,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "write",
-      "description": "Reverse the source/target direction of a directed relationship or flow via `Refactoring.ReverseRelationship.reverse(relationship)`. [Retroactive OpenAPI Discovery]",
+      "description": "Reverse the source/target direction of a directed relationship or flow via `Refactoring.ReverseRelationship.reverse(relationship)`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1587,7 +1583,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "write",
-      "description": "Extract selected elements/nodes into a new reusable element or sub-activity/sub-machine via `Refactoring.Extracting`. [Retroactive OpenAPI Discovery]",
+      "description": "Extract selected elements/nodes into a new reusable element or sub-activity/sub-machine via `Refactoring.Extracting`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1611,7 +1607,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "write",
-      "description": "Create a new blank Cameo project via `ProjectsManager.createProject()` and optionally apply the SysML profile. [Retroactive OpenAPI Discovery]",
+      "description": "Create a new blank Cameo project via `ProjectsManager.createProject()` and optionally apply the SysML profile.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1632,7 +1628,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "read",
-      "description": "Open a local `.mdzip` or `.xml` project file via `ProjectDescriptorsFactory.createProjectDescriptor(URI)` and `ProjectsManager.loadProject`. [Retroactive OpenAPI Discovery]",
+      "description": "Open a local `.mdzip` or `.xml` project file via `ProjectDescriptorsFactory.createProjectDescriptor(URI)` and `ProjectsManager.loadProject`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1655,7 +1651,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "read",
-      "description": "Close an open project cleanly via `ProjectsManager.closeProject(project)`. [Retroactive OpenAPI Discovery]",
+      "description": "Close an open project cleanly via `ProjectsManager.closeProject(project)`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1672,7 +1668,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "read",
-      "description": "Save or export the active project to a new `.mdzip` file location via `ProjectsManager.saveProject(descriptor, silent)`. [Retroactive OpenAPI Discovery]",
+      "description": "Save or export the active project to a new `.mdzip` file location via `ProjectsManager.saveProject(descriptor, silent)`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -1691,7 +1687,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "read",
-      "description": "List all attached modules/usages (`.mdzip` libraries and profiles), versions, and shared packages via `ProjectUtilities.getAttachedProjects(project)`. [Retroactive OpenAPI Discovery]",
+      "description": "List all attached modules/usages (`.mdzip` libraries and profiles), versions, and shared packages via `ProjectUtilities.getAttachedProjects(project)`.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -1703,7 +1699,7 @@
       "family": "model",
       "catalogClass": "com.cameomcp.catalog.ModelTools",
       "kind": "read",
-      "description": "Return all shared and re-shared packages across the primary project and attached modules via `ProjectUtilities.getSharedPackagesIncludingResharedRecursively`. [Retroactive OpenAPI Discovery]",
+      "description": "Return all shared and re-shared packages across the primary project and attached modules via `ProjectUtilities.getSharedPackagesIncludingResharedRecursively`.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -2646,7 +2642,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "read",
-      "description": "List validated diagram request tokens, aliases, and native Cameo DiagramTypeConstants. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List validated diagram request tokens, aliases, and native Cameo DiagramTypeConstants.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -2658,7 +2654,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Place a model element on a diagram canvas via PresentationElementsManager.createShapeElement and return its presentationId. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Place a model element on a diagram canvas via PresentationElementsManager.createShapeElement and return its presentationId.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2698,7 +2694,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "read",
-      "description": "Export a diagram image as base64 PNG/JPEG with optional metadata-only, resize, and transcode controls. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Export a diagram image as base64 PNG/JPEG with optional metadata-only, resize, and transcode controls.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2733,7 +2729,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "read",
-      "description": "Apply Cameo's built-in diagram auto-layout via DiagramPresentationElement.layout. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Apply Cameo's built-in diagram auto-layout via DiagramPresentationElement.layout.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2756,7 +2752,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "read",
-      "description": "List diagram shapes recursively with paging, filtering, bounds, summary counts, and presentation IDs. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List diagram shapes recursively with paging, filtering, bounds, summary counts, and presentation IDs.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2779,7 +2775,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "read",
-      "description": "Read the current display PropertyManager properties of one diagram shape. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Read the current display PropertyManager properties of one diagram shape.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2803,7 +2799,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Reposition and resize shapes on a diagram via PresentationElementsManager.reshapeShapeElement with per-item results. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Reposition and resize shapes on a diagram via PresentationElementsManager.reshapeShapeElement with per-item results.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2827,7 +2823,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "destructive",
-      "description": "Remove shapes from a diagram via PresentationElementsManager.deletePresentationElement (model elements preserved). [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Remove shapes from a diagram via PresentationElementsManager.deletePresentationElement (model elements preserved).",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2851,7 +2847,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Draw relationship paths between shapes on a diagram via PresentationElementsManager.createPathElement. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Draw relationship paths between shapes on a diagram via PresentationElementsManager.createPathElement.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2875,7 +2871,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Set display properties (colors, fonts, compartment visibility) via cloned PropertyManager with receipts. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Set display properties (colors, fonts, compartment visibility) via cloned PropertyManager with receipts.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2904,7 +2900,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Apply normalized compartment visibility controls to one shape via CompartmentManager. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Apply normalized compartment visibility controls to one shape via CompartmentManager.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2933,7 +2929,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Apply a high-level state-transition label preset (show trigger, guard, effect) on a State Machine diagram. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Apply a high-level state-transition label preset (show trigger, guard, effect) on a State Machine diagram.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2961,7 +2957,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Apply a high-level item-flow/information-flow label preset for SysML IBD cleanup. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Apply a high-level item-flow/information-flow label preset for SysML IBD cleanup.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -2989,7 +2985,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Apply a high-level allocation/full-port compartment presentation preset for SysML BDD/IBD cleanup. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Apply a high-level allocation/full-port compartment presentation preset for SysML BDD/IBD cleanup.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3017,7 +3013,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Auto-show hidden path and port labels using diagram-type-aware native repair defaults. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Auto-show hidden path and port labels using diagram-type-aware native repair defaults.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3040,7 +3036,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Reset overlapping path labels via PresentationElementsManager.resetLabelPositions with dry-run receipts. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Reset overlapping path labels via PresentationElementsManager.resetLabelPositions with dry-run receipts.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3063,7 +3059,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Force conveyed-item/item-flow labels visible on eligible connector/flow paths. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Force conveyed-item/item-flow labels visible on eligible connector/flow paths.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3082,7 +3078,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "destructive",
-      "description": "Normalize compartment and full-port visibility across all shapes on a diagram by diagram type. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Normalize compartment and full-port visibility across all shapes on a diagram by diagram type.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3105,7 +3101,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "destructive",
-      "description": "Remove unwanted auto-displayed symbols while preserving caller-requested presentation IDs. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Remove unwanted auto-displayed symbols while preserving caller-requested presentation IDs.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3129,7 +3125,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "destructive",
-      "description": "Remove cluttered child path decorations such as association end role/multiplicity labels. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Remove cluttered child path decorations such as association end role/multiplicity labels.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3152,7 +3148,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Move existing presentation elements under new container shapes via PresentationElementsManager.movePresentationElement. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Move existing presentation elements under new container shapes via PresentationElementsManager.movePresentationElement.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3189,7 +3185,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Update path breakpoints, client/supplier connection points, and label reset behavior via changePathPoints. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Update path breakpoints, client/supplier connection points, and label reset behavior via changePathPoints.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3222,7 +3218,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Rename a Diagram element and update its DiagramPresentationElement header. [Retroactive OpenAPI Discovery]",
+      "description": "Rename a Diagram element and update its DiagramPresentationElement header.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3246,7 +3242,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "read",
-      "description": "Open, focus, or close a diagram tab in Cameo's main GUI via `DiagramPresentationElement.open()` / `ProjectDiagramWindowsManager`. [Retroactive OpenAPI Discovery]",
+      "description": "Open, focus, or close a diagram tab in Cameo's main GUI via `DiagramPresentationElement.open()` / `ProjectDiagramWindowsManager`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3269,7 +3265,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Export a diagram directly to disk as PNG, SVG, EMF, JPEG, or PDF via `ImageExporter.export(dpe, format, file)` without base64 token overhead. [Retroactive OpenAPI Discovery]",
+      "description": "Export a diagram directly to disk as PNG, SVG, EMF, JPEG, or PDF via `ImageExporter.export(dpe, format, file)` without base64 token overhead.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3297,7 +3293,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Create a positioned Sequence Diagram message (synchCall, asynchCall, asynchSignal, reply, createMessage, deleteMessage, or recursive self-message) with explicit `insertAfter` and `verticalGap` via `PresentationElementsManager.createSequenceMessage`. [Retroactive OpenAPI Discovery]",
+      "description": "Create a positioned Sequence Diagram message (synchCall, asynchCall, asynchSignal, reply, createMessage, deleteMessage, or recursive self-message) with explicit `insertAfter` and `verticalGap` via `PresentationElementsManager.createSequenceMessage`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3351,7 +3347,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Create a Lost or Found sequence message symbol on a lifeline via `PresentationElementsManager.createLostMessage` / `createFoundMessage`. [Retroactive OpenAPI Discovery]",
+      "description": "Create a Lost or Found sequence message symbol on a lifeline via `PresentationElementsManager.createLostMessage` / `createFoundMessage`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3388,7 +3384,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Create a self-transition or self-relationship shape element when client == supplier via `PresentationElementsManager.createPathToSelfShapeElement`. [Retroactive OpenAPI Discovery]",
+      "description": "Create a self-transition or self-relationship shape element when client == supplier via `PresentationElementsManager.createPathToSelfShapeElement`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3417,7 +3413,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Create horizontal and vertical ActivityPartition swimlanes on an Activity diagram via `PresentationElementsManager.createSwimlane`. [Retroactive OpenAPI Discovery]",
+      "description": "Create horizontal and vertical ActivityPartition swimlanes on an Activity diagram via `PresentationElementsManager.createSwimlane`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3444,7 +3440,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Create a nested IBD PartView symbol with explicit `nestedPath` property chain (dot-notation part hierarchy) via `PresentationElementsManager.createPartShape`. [Retroactive OpenAPI Discovery]",
+      "description": "Create a nested IBD PartView symbol with explicit `nestedPath` property chain (dot-notation part hierarchy) via `PresentationElementsManager.createPartShape`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3485,7 +3481,7 @@
       "family": "diagrams",
       "catalogClass": "com.cameomcp.catalog.DiagramTools",
       "kind": "write",
-      "description": "Create a Note, TextBox, Separator, or ImageShape on a diagram and optionally anchor it to a target symbol via `createNote` / `connectNote` / `setText`. [Retroactive OpenAPI Discovery]",
+      "description": "Create a Note, TextBox, Separator, or ImageShape on a diagram and optionally anchor it to a target symbol via `createNote` / `connectNote` / `setText`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3964,7 +3960,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "List validated native matrix kinds (refine, derive, satisfy, allocation, dependency), aliases, and example type domains. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List validated native matrix kinds (refine, derive, satisfy, allocation, dependency), aliases, and example type domains.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -3976,7 +3972,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Read one supported native matrix with rows, columns, and populated cells. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Read one supported native matrix with rows, columns, and populated cells.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -3995,7 +3991,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "List native Generic Table artifacts in the project. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List native Generic Table artifacts in the project.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4012,7 +4008,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Read one Generic Table with row, column, and cell data via GenericTableManager. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Read one Generic Table with row, column, and cell data via GenericTableManager.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4031,7 +4027,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Discover possible Generic Table column IDs for an element or metaclass type. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Discover possible Generic Table column IDs for an element or metaclass type.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4050,7 +4046,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "write",
-      "description": "Create and configure a native Generic Table artifact with scope, element types, and visible columns. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Create and configure a native Generic Table artifact with scope, element types, and visible columns.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4087,7 +4083,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Read one Relation Map with persisted graph settings and context element. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Read one Relation Map with persisted graph settings and context element.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4106,7 +4102,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "write",
-      "description": "Update native graph settings (context, depth, grouping, layout) for an existing Relation Map. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Update native graph settings (context, depth, grouping, layout) for an existing Relation Map.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4130,7 +4126,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Explicitly request CATIA native Relation Map refresh on the EDT with timeout evidence. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Explicitly request CATIA native Relation Map refresh on the EDT with timeout evidence.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4153,7 +4149,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "write",
-      "description": "Dump raw GraphSettings getter evidence for a Relation Map. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Dump raw GraphSettings getter evidence for a Relation Map.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4172,7 +4168,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Inspect Relation Map presentation elements, node hierarchy, and edge counts. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Inspect Relation Map presentation elements, node hierarchy, and edge counts.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4191,7 +4187,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "List bridge-known Relation Map criteria templates captured from live UI evidence. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List bridge-known Relation Map criteria templates captured from live UI evidence.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -4203,7 +4199,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "write",
-      "description": "Apply Relation Map dependency criteria with receipts. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Apply Relation Map dependency criteria with receipts.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4227,7 +4223,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Request native node expansion on a Relation Map and report reflected support/evidence. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Request native node expansion on a Relation Map and report reflected support/evidence.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4250,7 +4246,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Request native node collapse on a Relation Map and report reflected support/evidence. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Request native node collapse on a Relation Map and report reflected support/evidence.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4273,7 +4269,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Render/export Relation Map image and node/edge evidence without implicit EDT-blocking refresh by default. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Render/export Relation Map image and node/edge evidence without implicit EDT-blocking refresh by default.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4296,7 +4292,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Verify Relation Map graph and presentation evidence against caller-provided node/edge thresholds. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Verify Relation Map graph and presentation evidence against caller-provided node/edge thresholds.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4323,7 +4319,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Diff two Relation Maps structurally across nodes, edges, and settings. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Diff two Relation Maps structurally across nodes, edges, and settings.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4347,7 +4343,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Build a structured traceability graph (nodes + directed edges) from a Relation Map or model scope. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Build a structured traceability graph (nodes + directed edges) from a Relation Map or model scope.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4370,7 +4366,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "write",
-      "description": "Capture an in-memory model/diagram evidence snapshot for before/after comparison. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Capture an in-memory model/diagram evidence snapshot for before/after comparison.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4393,7 +4389,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "List captured in-memory evidence snapshots. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List captured in-memory evidence snapshots.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -4405,7 +4401,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Read a captured evidence snapshot by ID. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Read a captured evidence snapshot by ID.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4424,7 +4420,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "destructive",
-      "description": "Delete a captured evidence snapshot from memory. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Delete a captured evidence snapshot from memory.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4443,7 +4439,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Diff two captured snapshots with bounded structural details. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Diff two captured snapshots with bounded structural details.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4467,7 +4463,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "List built-in read-only OpenAPI probe templates. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List built-in read-only OpenAPI probe templates.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -4479,7 +4475,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "write",
-      "description": "Execute a controlled OpenAPI probe or restricted Java-reflection readback. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Execute a controlled OpenAPI probe or restricted Java-reflection readback.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4502,7 +4498,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "write",
-      "description": "Create an `<<AttachedFile>>` comment element under an owner and embed a local file into the model via `FileAttachmentsHelper.createAttachedFileElement` and `storeFileToAttachedFile`. [Retroactive OpenAPI Discovery]",
+      "description": "Create an `<<AttachedFile>>` comment element under an owner and embed a local file into the model via `FileAttachmentsHelper.createAttachedFileElement` and `storeFileToAttachedFile`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4526,7 +4522,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Extract an embedded file from an `<<AttachedFile>>` element to a local directory via `FileAttachmentsHelper.extractToDirectory`. [Retroactive OpenAPI Discovery]",
+      "description": "Extract an embedded file from an `<<AttachedFile>>` element to a local directory via `FileAttachmentsHelper.extractToDirectory`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4550,7 +4546,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "read",
-      "description": "Inspect embedded file metadata (name, size, dateAdded, dateModified, author) or base64 content via `FileAttachmentsHelper.getStoredFileInputStream`. [Retroactive OpenAPI Discovery]",
+      "description": "Inspect embedded file metadata (name, size, dateAdded, dateModified, author) or base64 content via `FileAttachmentsHelper.getStoredFileInputStream`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -4573,7 +4569,7 @@
       "family": "artifacts",
       "catalogClass": "com.cameomcp.catalog.ArtifactTools",
       "kind": "destructive",
-      "description": "Remove an embedded file payload from an element via `FileAttachmentsHelper.removeStoredFile`. [Retroactive OpenAPI Discovery]",
+      "description": "Remove an embedded file payload from an element via `FileAttachmentsHelper.removeStoredFile`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5339,7 +5335,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Inspect native model validation capabilities and loaded validation suites. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Inspect native model validation capabilities and loaded validation suites.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5351,7 +5347,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List all ValidationSuite packages and rules available in the project and loaded profiles. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List all ValidationSuite packages and rules available in the project and loaded profiles.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5363,7 +5359,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Run a native Cameo validation suite against a scope and cache RuleViolationResult records. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Run a native Cameo validation suite against a scope and cache RuleViolationResult records.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5390,7 +5386,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Read cached results from a previous native validation execution. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Read cached results from a previous native validation execution.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5409,7 +5405,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Inspect Report Wizard capabilities, engines, and output format support. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Inspect Report Wizard capabilities, engines, and output format support.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5421,7 +5417,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Validate Report Wizard template parameters and output path in dry-run preview mode. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Validate Report Wizard template parameters and output path in dry-run preview mode.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5449,7 +5445,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Check status and output file receipt of a Report Wizard generation job. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Check status and output file receipt of a Report Wizard generation job.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5468,7 +5464,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Inspect JSON/CSV/ReqIF requirements import and export capabilities. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Inspect JSON/CSV/ReqIF requirements import and export capabilities.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5480,7 +5476,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Export requirements hierarchy and traceability to structured JSON or CSV. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Export requirements hierarchy and traceability to structured JSON or CSV.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5507,7 +5503,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Dry-run preview of JSON/CSV requirements import showing adds, updates, and conflicts. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Dry-run preview of JSON/CSV requirements import showing adds, updates, and conflicts.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5535,7 +5531,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Apply validated JSON/CSV requirements import inside a SessionManager transaction. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Apply validated JSON/CSV requirements import inside a SessionManager transaction.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5568,7 +5564,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Get SysML requirements profile and ReqIF plugin capability summary. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Get SysML requirements profile and ReqIF plugin capability summary.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5580,7 +5576,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Preview requirements export scope and row counts before writing to disk. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Preview requirements export scope and row counts before writing to disk.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5603,7 +5599,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Preview ReqIF or tabular requirements import mapping before execution. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Preview ReqIF or tabular requirements import mapping before execution.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5627,7 +5623,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Check Cameo Simulation Toolkit (CST) availability, engine types, and active sessions. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Check Cameo Simulation Toolkit (CST) availability, engine types, and active sessions.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5639,7 +5635,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List SimulationConfiguration elements and execution targets in the project. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List SimulationConfiguration elements and execution targets in the project.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5651,7 +5647,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Preview simulation execution settings, target classifier, and initial values. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Preview simulation execution settings, target classifier, and initial values.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5670,7 +5666,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Read runtime values, state history, and console output from a SimulationExecution. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Read runtime values, state history, and console output from a SimulationExecution.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5689,7 +5685,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "destructive",
-      "description": "Terminate an active Cameo Simulation Toolkit session cleanly. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Terminate an active Cameo Simulation Toolkit session cleanly.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5708,7 +5704,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Check Teamwork Cloud (TWC / ESI) connection status, user session, and server reachability. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Check Teamwork Cloud (TWC / ESI) connection status, user session, and server reachability.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5720,7 +5716,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Get Teamwork Cloud repository ID, branch, revision, and remote descriptor metadata. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Get Teamwork Cloud repository ID, branch, revision, and remote descriptor metadata.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5732,7 +5728,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Preview modified local elements and lock checks prior to Teamwork Cloud commit. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Preview modified local elements and lock checks prior to Teamwork Cloud commit.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5744,7 +5740,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Preview incoming remote changes from Teamwork Cloud prior to update. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Preview incoming remote changes from Teamwork Cloud prior to update.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5756,7 +5752,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List remote projects available on the connected Teamwork Cloud server. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List remote projects available on the connected Teamwork Cloud server.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5768,7 +5764,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List branches for the active Teamwork Cloud project. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List branches for the active Teamwork Cloud project.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5780,7 +5776,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Get commit revision history for the active Teamwork Cloud project. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Get commit revision history for the active Teamwork Cloud project.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5797,7 +5793,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "List currently locked elements and lock owners in the active Teamwork Cloud project. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List currently locked elements and lock owners in the active Teamwork Cloud project.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5809,7 +5805,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Probe Cameo DataHub plugin presence and loaded driver types without emitting credentials. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Probe Cameo DataHub plugin presence and loaded driver types without emitting credentials.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5821,7 +5817,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List configured DataHub data sources and synchronization statuses (read-only). [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List configured DataHub data sources and synchronization statuses (read-only).",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5833,7 +5829,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Preview pending DataHub sync items in read-only mode. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Preview pending DataHub sync items in read-only mode.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5852,7 +5848,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Inspect structured criteria expression builder capabilities and metaclass navigation rules. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Inspect structured criteria expression builder capabilities and metaclass navigation rules.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5864,7 +5860,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List supported criteria operators, filter predicates, and stereotype matchers. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List supported criteria operators, filter predicates, and stereotype matchers.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5876,7 +5872,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Build a structured Finder/RelationMap criteria expression from element types and stereotypes. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Build a structured Finder/RelationMap criteria expression from element types and stereotypes.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5901,7 +5897,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Validate a criteria expression syntax and metaclass resolution against the active project. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Validate a criteria expression syntax and metaclass resolution against the active project.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5920,7 +5916,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Preview matching elements for a criteria expression with bounded count. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Preview matching elements for a criteria expression with bounded count.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5943,7 +5939,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Inspect profile management capabilities and standard/custom profile repositories. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Inspect profile management capabilities and standard/custom profile repositories.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5955,7 +5951,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Summarize all applied profiles, versions, and stereotype counts in the project. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Summarize all applied profiles, versions, and stereotype counts in the project.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -5967,7 +5963,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List all stereotypes, tagged value definitions, and metaclasses inside a specific profile. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List all stereotypes, tagged value definitions, and metaclasses inside a specific profile.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -5986,7 +5982,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Dry-run preview of applying or updating a profile on a target package. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Dry-run preview of applying or updating a profile on a target package.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6010,7 +6006,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Check stereotyped elements against profile tag multiplicity and type constraints. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Check stereotyped elements against profile tag multiplicity and type constraints.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6029,7 +6025,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Check Model-Based Product Line Engineering (MBPLE) plugin and profile availability. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Check Model-Based Product Line Engineering (MBPLE) plugin and profile availability.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -6041,7 +6037,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List Product Line Engineering (MBPLE) variation points and feature trees. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List Product Line Engineering (MBPLE) variation points and feature trees.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -6053,7 +6049,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List VariantConfiguration elements and active feature selections. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List VariantConfiguration elements and active feature selections.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -6065,7 +6061,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Evaluate an MBPLE variation point boolean/feature expression against a VariantConfiguration. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Evaluate an MBPLE variation point boolean/feature expression against a VariantConfiguration.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6089,7 +6085,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Preview variant realization transformation for a VariantConfiguration. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Preview variant realization transformation for a VariantConfiguration.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6108,7 +6104,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Probe installed domain extension plugins (UAF, DoDAF, SysML v2, Safety, Cyber, Spice). [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Probe installed domain extension plugins (UAF, DoDAF, SysML v2, Safety, Cyber, Spice).",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -6120,7 +6116,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Scan installed safety/reliability (ISO 26262, ARP4761, RAAML, FMEA) and cyber plugins/profiles. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Scan installed safety/reliability (ISO 26262, ARP4761, RAAML, FMEA) and cyber plugins/profiles.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -6132,7 +6128,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List domain-specific stereotypes exposed by optional safety, cyber, or UAF extensions. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List domain-specific stereotypes exposed by optional safety, cyber, or UAF extensions.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6151,7 +6147,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Preview creation of a domain-extension artifact (FMEA table, Fault Tree, Cyber Risk matrix) with refusal/capability receipts. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Preview creation of a domain-extension artifact (FMEA table, Fault Tree, Cyber Risk matrix) with refusal/capability receipts.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6175,7 +6171,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Inspect custom and profile-extended DiagramDescriptor capabilities. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Inspect custom and profile-extended DiagramDescriptor capabilities.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -6187,7 +6183,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Inspect DiagramDescriptor metadata and supported symbols/actions for a custom diagram type. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Inspect DiagramDescriptor metadata and supported symbols/actions for a custom diagram type.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6206,7 +6202,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List toolbar action categories and creatable element types for a specialized diagram. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List toolbar action categories and creatable element types for a specialized diagram.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6225,7 +6221,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Validate parent owner rules and stereotype prerequisites before creating a specialized diagram. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Validate parent owner rules and stereotype prerequisites before creating a specialized diagram.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6249,7 +6245,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Verify that symbols on a specialized diagram conform to its DiagramDescriptor metamodel rules. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Verify that symbols on a specialized diagram conform to its DiagramDescriptor metamodel rules.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6268,7 +6264,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "List individual `Change` records, conflicts, equivalent changes, and required dependencies from a computed `ProjectDifference`. [Retroactive OpenAPI Discovery]",
+      "description": "List individual `Change` records, conflicts, equivalent changes, and required dependencies from a computed `ProjectDifference`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6291,7 +6287,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Preview 2-way or 3-way merge conflict resolution using `MergeUtil.ConflictResolution` (TARGET_PREFERRED / SOURCE_PREFERRED). [Retroactive OpenAPI Discovery]",
+      "description": "Preview 2-way or 3-way merge conflict resolution using `MergeUtil.ConflictResolution` (TARGET_PREFERRED / SOURCE_PREFERRED).",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6314,7 +6310,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Execute project merge changes via `MergeUtil` with explicit `allowWrite=true` gate. [Retroactive OpenAPI Discovery]",
+      "description": "Execute project merge changes via `MergeUtil` with explicit `allowWrite=true` gate.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6342,7 +6338,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List all active and normal hyperlinks (model element links, diagram links, web URLs, file links) attached to an element via `HyperlinkHandler`. [Retroactive OpenAPI Discovery]",
+      "description": "List all active and normal hyperlinks (model element links, diagram links, web URLs, file links) attached to an element via `HyperlinkHandler`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6361,7 +6357,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Search the model for all elements referencing a specific hyperlink target via `Finder.byHyperlink()`. [Retroactive OpenAPI Discovery]",
+      "description": "Search the model for all elements referencing a specific hyperlink target via `Finder.byHyperlink()`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6384,7 +6380,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Inspect active AutoNumbering schemes, prefixes, and separators configured for Requirements, Activities, or Use Cases via `NumberingInfoHelper`. [Retroactive OpenAPI Discovery]",
+      "description": "Inspect active AutoNumbering schemes, prefixes, and separators configured for Requirements, Activities, or Use Cases via `NumberingInfoHelper`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6401,7 +6397,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Configure prefix, separator, and hierarchical numbering scheme on a package or element type. [Retroactive OpenAPI Discovery]",
+      "description": "Configure prefix, separator, and hierarchical numbering scheme on a package or element type.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6434,7 +6430,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Trigger automatic hierarchical renumbering of Requirements or Actions in a package scope. [Retroactive OpenAPI Discovery]",
+      "description": "Trigger automatic hierarchical renumbering of Requirements or Actions in a package scope.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6457,7 +6453,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Evaluate an OCL 2.0, Binary, or Structured Expression against a context element using `ExpressionContext`. [Retroactive OpenAPI Discovery]",
+      "description": "Evaluate an OCL 2.0, Binary, or Structured Expression against a context element using `ExpressionContext`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6485,7 +6481,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "Calculate recursive package element/relationship/stereotype coverage metrics via `com.nomagic.magicdraw.modelmetrics.ScriptHelper`. [Retroactive OpenAPI Discovery]",
+      "description": "Calculate recursive package element/relationship/stereotype coverage metrics via `com.nomagic.magicdraw.modelmetrics.ScriptHelper`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -6508,7 +6504,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "read",
-      "description": "List registered Model Transformation types (e.g., UML-to-XML, SysML-to-Model, Any-to-Any) in `com.nomagic.magicdraw.modeltransformations`. [Retroactive OpenAPI Discovery]",
+      "description": "List registered Model Transformation types (e.g., UML-to-XML, SysML-to-Model, Any-to-Any) in `com.nomagic.magicdraw.modeltransformations`.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -6520,7 +6516,7 @@
       "family": "advanced",
       "catalogClass": "com.cameomcp.catalog.AdvancedTools",
       "kind": "write",
-      "description": "Execute a registered Model Transformation with source/target package mapping inside a SessionManager transaction. [Retroactive OpenAPI Discovery]",
+      "description": "Execute a registered Model Transformation with source/target package mapping inside a SessionManager transaction.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7197,7 +7193,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "List built-in methodology packs such as oosem, sysmod, and uaf. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "List built-in methodology packs such as oosem, sysmod, and uaf.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -7209,7 +7205,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Get one pack's phases, bounded artifact recipes, naming rules, and evidence structure. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Get one pack's phases, bounded artifact recipes, naming rules, and evidence structure.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7228,7 +7224,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Inspect current model packages and explain which methodology artifact is missing next and why. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Inspect current model packages and explain which methodology artifact is missing next and why.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7252,7 +7248,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "write",
-      "description": "Execute a bounded methodology recipe inside a SessionManager transaction and return receipts, conformance, and review packet output. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Execute a bounded methodology recipe inside a SessionManager transaction and return receipts, conformance, and review packet output.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7285,7 +7281,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Validate normalized artifact snapshots against recipe expectations without mutating the model. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Validate normalized artifact snapshots against recipe expectations without mutating the model.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7314,7 +7310,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "write",
-      "description": "Generate a compact evidence bundle and Markdown review packet without mutating the model. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Generate a compact evidence bundle and Markdown review packet without mutating the model.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7338,7 +7334,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Check matrix row/column membership, populated-cell count, dependency names, and density. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Check matrix row/column membership, populated-cell count, dependency names, and density.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7361,7 +7357,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Check rendered diagram bounds, shape/path presence, canvas coverage, and symbol bounding-box overlap risk. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Check rendered diagram bounds, shape/path presence, canvas coverage, and symbol bounding-box overlap risk.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7384,7 +7380,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Check connected behavior flow, initial/final node reachability, and swimlane partition sanity on an Activity diagram. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Check connected behavior flow, initial/final node reachability, and swimlane partition sanity on an Activity diagram.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7403,7 +7399,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Check InterfaceBlock flow-property ownership, conjugate port compatibility, duplicate vocabulary, and direction conflicts. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Check InterfaceBlock flow-property ownership, conjugate port compatibility, duplicate vocabulary, and direction conflicts.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7422,7 +7418,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Check SysML Requirement IDs, non-blank text, atomic shall statements, and verification traceability readiness. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Check SysML Requirement IDs, non-blank text, atomic shall statements, and verification traceability readiness.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7441,7 +7437,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Compare Activity, Interface, IBD, and Requirements-to-Architecture vocabulary and satisfy/allocate trace coverage. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Compare Activity, Interface, IBD, and Requirements-to-Architecture vocabulary and satisfy/allocate trace coverage.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7460,7 +7456,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Run semantic cross-diagram checks and return previewable remediation receipts plus a structured patchPlan. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Run semantic cross-diagram checks and return previewable remediation receipts plus a structured patchPlan.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7479,7 +7475,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Turn existing validation payloads into a non-mutating, step-by-step remediation patch plan. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Turn existing validation payloads into a non-mutating, step-by-step remediation patch plan.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7498,7 +7494,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Collect and proof requirements text, comments, state/transition names, and diagram labels with optional safe auto-apply. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Collect and proof requirements text, comments, state/transition names, and diagram labels with optional safe auto-apply.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7521,7 +7517,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "write",
-      "description": "Apply a previously generated proofing patch plan to the live model inside a single undoable session. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Apply a previously generated proofing patch plan to the live model inside a single undoable session.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7540,7 +7536,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Diff current model artifacts against an expected methodology artifact list and return preview actions. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Diff current model artifacts against an expected methodology artifact list and return preview actions.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7564,7 +7560,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Validate a pack/recipe/package scope against methodology structural and naming definitions. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Validate a pack/recipe/package scope against methodology structural and naming definitions.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7588,7 +7584,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "write",
-      "description": "Plan or execute export of all methodology-required diagrams to a target directory. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Plan or execute export of all methodology-required diagrams to a target directory.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -7617,7 +7613,7 @@
       "family": "analysis",
       "catalogClass": "com.cameomcp.catalog.AnalysisTools",
       "kind": "read",
-      "description": "Plan or assemble review packages and HTML/DocBook/PPTX report bundles from the exported diagram set. [ajhcs/cameo-mcp-bridge Parity]",
+      "description": "Plan or assemble review packages and HTML/DocBook/PPTX report bundles from the exported diagram set.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -8230,7 +8226,7 @@
       "family": "sysml2",
       "catalogClass": "com.cameomcp.catalog.Sysml2Tools",
       "kind": "read",
-      "description": "Read security classification and data markings (CUI, Classification Banner, Portion Markings) on elements or diagrams (supports 2024x & 2026x `datamarkingsandclassification`). [Retroactive OpenAPI Discovery]",
+      "description": "Read security classification and data markings (CUI, Classification Banner, Portion Markings) on elements or diagrams (supports 2024x & 2026x `datamarkingsandclassification`).",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -8249,7 +8245,7 @@
       "family": "sysml2",
       "catalogClass": "com.cameomcp.catalog.Sysml2Tools",
       "kind": "write",
-      "description": "Apply or update security classification / data marking stereotypes and banner properties on an element or diagram. [Retroactive OpenAPI Discovery]",
+      "description": "Apply or update security classification / data marking stereotypes and banner properties on an element or diagram.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -8277,7 +8273,7 @@
       "family": "sysml2",
       "catalogClass": "com.cameomcp.catalog.Sysml2Tools",
       "kind": "read",
-      "description": "Poll the plugin's non-blocking SmartListener ring-buffer for recent model element creations, modifications, and deletions (resolves the lack of change notifications in request/response MCP). [Retroactive OpenAPI Discovery]",
+      "description": "Poll the plugin's non-blocking SmartListener ring-buffer for recent model element creations, modifications, and deletions (resolves the lack of change notifications in request/response MCP).",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -8298,7 +8294,7 @@
       "family": "sysml2",
       "catalogClass": "com.cameomcp.catalog.Sysml2Tools",
       "kind": "read",
-      "description": "Detect 2026x SysML v2 plugin/metamodel availability, SysML v2 layout engine support (`com.nomagic.magicdraw.uml.symbols.layout.sysml2`), and v1-to-v2 conversion readiness. [Retroactive OpenAPI Discovery]",
+      "description": "Detect 2026x SysML v2 plugin/metamodel availability, SysML v2 layout engine support (`com.nomagic.magicdraw.uml.symbols.layout.sysml2`), and v1-to-v2 conversion readiness.",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -8310,7 +8306,7 @@
       "family": "sysml2",
       "catalogClass": "com.cameomcp.catalog.Sysml2Tools",
       "kind": "read",
-      "description": "Read Cameo global EnvironmentOptions (`Application.getInstance().getEnvironmentOptions()`) and PathVariables (`com.nomagic.magicdraw.pathvariables`). [Retroactive OpenAPI Discovery]",
+      "description": "Read Cameo global EnvironmentOptions (`Application.getInstance().getEnvironmentOptions()`) and PathVariables (`com.nomagic.magicdraw.pathvariables`).",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -8327,7 +8323,7 @@
       "family": "sysml2",
       "catalogClass": "com.cameomcp.catalog.Sysml2Tools",
       "kind": "read",
-      "description": "Resolve or inspect a Cameo path variable (e.g., `<install.root>`, `<profiles.dir>`) via `PathVariablesResolver`. [Retroactive OpenAPI Discovery]",
+      "description": "Resolve or inspect a Cameo path variable (e.g., `<install.root>`, `<profiles.dir>`) via `PathVariablesResolver`.",
       "inputSchema": {
         "type": "object",
         "properties": {

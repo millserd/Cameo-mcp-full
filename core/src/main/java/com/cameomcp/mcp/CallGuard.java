@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Serializes mutating writes, checks browser Origin headers to block cross-site local attacks,
- * and validates optional Bearer tokens (aligned with millserd/Cameo-mcp CallGuard).
+ * and validates optional Bearer tokens.
  */
 public final class CallGuard {
 

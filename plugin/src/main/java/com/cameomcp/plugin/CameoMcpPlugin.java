@@ -10,7 +10,7 @@ import com.nomagic.magicdraw.plugins.Plugin;
 /**
  * Main Cameo Plugin Entry Point (com.cameomcp.plugin.CameoMcpPlugin).
  *
- * Aligned with millserd/Cameo-mcp and ajhcs/cameo-mcp-bridge for Cameo 2024x and 2026x:
+ * Startup sequence (Cameo 2024x and 2026x):
  * 1. Loads ~/.cameo-mcp/settings.properties, env vars (CAMEO_MCP_PORT / CAMEO_BRIDGE_PORT), or -Dcameo.mcp.port.
  * 2. Registers top-level "MCP" menu in Cameo's main window via McpMenuConfigurator.
  * 3. Starts McpRuntime (embedded HTTP + JSON-RPC 2.0 server on 127.0.0.1:18740).

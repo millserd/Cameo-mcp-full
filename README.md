@@ -18,7 +18,7 @@ cameo-mcp/
 ├── core/
 │   └── src/main/java/com/cameomcp/
 │       ├── catalog/
-│       │   ├── Catalog.java          # Unified 365-tool registry loader
+│       │   ├── Catalog.java          # 365-tool registry loader
 │       │   ├── CatalogPrompts.java   # 4 pre-built MBSE prompts
 │       │   ├── ServerTools.java      # 'server' family (19 tools)
 │       │   ├── ModelTools.java       # 'model' family (52 tools)

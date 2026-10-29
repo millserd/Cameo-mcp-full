@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Embedded Java MCP Server Runtime & HTTP Transport (com.cameomcp.plugin.McpRuntime).
  *
- * Supports both millserd/Cameo-mcp and ajhcs/cameo-mcp-bridge transport conventions:
+ * Transport endpoints:
  * - POST   /mcp                 : Primary MCP JSON-RPC 2.0 endpoint (with Mcp-Session-Id header management)
  * - DELETE /mcp                 : Terminates active session designated by Mcp-Session-Id
  * - GET    /mcp                 : Returns 405 Method Not Allowed (per MCP Streamable HTTP spec when SSE push is off)
@@ -138,7 +138,7 @@ public class McpRuntime {
 
         String method = ex.getRequestMethod();
         if ("GET".equalsIgnoreCase(method)) {
-            // Per millserd/Cameo-mcp McpHttpTransport: GET /mcp returns 405 (SSE push disabled; standard HTTP JSON-RPC used)
+            // GET /mcp returns 405 (SSE push disabled; standard HTTP JSON-RPC used)
             ex.getResponseHeaders().set("Allow", "POST, DELETE");
             sendJson(ex, 405, "{\"error\":\"Method Not Allowed: use POST /mcp for JSON-RPC 2.0 requests\"}");
             return;

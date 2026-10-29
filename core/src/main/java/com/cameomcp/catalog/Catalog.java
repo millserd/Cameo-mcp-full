@@ -7,9 +7,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Unified Cameo MCP Tool Catalog Registry (com.cameomcp.catalog.Catalog).
+ * Cameo MCP Tool Catalog Registry (com.cameomcp.catalog.Catalog).
  *
- * Aligns the 7 primary catalog families from millserd/Cameo-mcp:
+ * Seven catalog families:
  *   1. ServerTools   ("server")    — 19 tools
  *   2. ModelTools    ("model")     — 52 tools
  *   3. DiagramTools  ("diagrams")  — 66 tools
@@ -17,7 +17,7 @@ import java.util.List;
  *   5. AdvancedTools ("advanced")  — 100 tools
  *   6. AnalysisTools ("analysis")  — 52 tools
  *   7. Sysml2Tools   ("sysml2")    — 28 tools
- * Total: 365 MCP tools (100% of millserd/Cameo-mcp + 100% of ajhcs/cameo-mcp-bridge + 60 OpenAPI additions).
+ * Total: 365 MCP tools.
  */
 public final class Catalog {
 

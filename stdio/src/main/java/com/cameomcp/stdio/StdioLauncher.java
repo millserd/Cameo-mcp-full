@@ -15,7 +15,6 @@ import java.time.Duration;
 /**
  * Pure-Java Stdio Launcher & CLI Inspector (com.cameomcp.stdio.StdioLauncher).
  *
- * Aligned with millserd/Cameo-mcp StdioLauncher.java:
  * - Bridges standard IO (stdio) for desktop AI clients (any MCP-capable client or IDE)
  *   to the active Cameo plugin HTTP endpoint (http://127.0.0.1:18740/mcp).
  * - Supports CLI flags:

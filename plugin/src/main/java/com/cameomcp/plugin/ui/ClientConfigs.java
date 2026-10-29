@@ -5,7 +5,6 @@ import java.awt.datatransfer.StringSelection;
 
 /**
  * Generates and copies ready-to-use MCP client configurations for Streamable HTTP and Stdio clients
- * (aligned with millserd/Cameo-mcp ClientConfigs.java).
  */
 public final class ClientConfigs {
 
